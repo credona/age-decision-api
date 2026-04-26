@@ -87,6 +87,15 @@ v2.0.0 -> trust and proof verification milestone
 - [x] Validate Docker build workflow
 - [x] Validate release workflow
 
+<h3>v1.1.0 - Python Runtime Upgrade</h3>
+
+- [x] Upgrade API Docker runtime from Python 3.11 to Python 3.14
+- [x] Validate API runtime compatibility with Python 3.14
+- [x] Validate downstream service compatibility with Python 3.14
+- [x] Validate `/health` endpoint
+- [x] Validate `/ready` endpoint
+- [x] Validate `/verify` endpoint with real image
+
 <h3>v1.x - API Improvements</h3>
 
 - [ ] Add rate limiting
@@ -102,9 +111,6 @@ v2.0.0 -> trust and proof verification milestone
 - [ ] Add downstream retry strategy
 - [ ] Add OpenAPI examples
 - [ ] Add integration tests with real Docker services
-- [ ] Upgrade Docker runtime from Python 3.11 to Python 3.14
-- [ ] Validate API runtime compatibility with Python 3.14
-- [ ] Validate downstream service compatibility with Python 3.14
 
 <h3>v2 - Trust and Identity</h3>
 
