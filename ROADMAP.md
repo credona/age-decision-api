@@ -96,6 +96,18 @@ v2.0.0 -> trust and proof verification milestone
 - [x] Validate `/ready` endpoint
 - [x] Validate `/verify` endpoint with real image
 
+<h3>v1.2.0 - API Contract Stabilization</h3>
+
+- [x] Rename final `cred_score` to `cred_global_score`
+- [x] Keep `cred_score` temporarily as legacy alias
+- [x] Consume `cred_decision_score` from Core
+- [x] Consume `cred_antispoof_score` from AntiSpoof
+- [x] Add stable error response schema
+- [x] Add request tracing to error responses
+- [x] Add OpenAPI contract tests
+- [x] Add stricter error response documentation
+- [x] Update README response examples
+
 <h3>v1.x - API Improvements</h3>
 
 - [ ] Add rate limiting
@@ -103,7 +115,6 @@ v2.0.0 -> trust and proof verification milestone
 - [ ] Add JWT authentication option
 - [ ] Add metrics with Prometheus
 - [ ] Add distributed tracing
-- [ ] Add error normalization
 - [ ] Add stricter payload validation
 - [ ] Add image size constraints
 - [ ] Add request body size limits

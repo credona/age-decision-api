@@ -1,9 +1,16 @@
 from uuid import uuid4
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Header
+from fastapi.responses import JSONResponse
 
 from app.config.settings import settings
-from app.models.schemas import HealthResponse, ReadyResponse, VerifyRequest, VerifyResponse
+from app.models.schemas import (
+    ErrorResponse,
+    HealthResponse,
+    ReadyResponse,
+    VerifyRequest,
+    VerifyResponse,
+)
 from app.services.decision_service import decision_service
 
 router = APIRouter()
@@ -46,20 +53,27 @@ async def ready() -> ReadyResponse:
     )
 
 
-@router.post("/verify", response_model=VerifyResponse)
+@router.post(
+    "/verify",
+    response_model=VerifyResponse,
+    responses={
+        400: {"model": ErrorResponse},
+        502: {"model": ErrorResponse},
+    },
+)
 async def verify(
     payload: VerifyRequest,
     x_request_id: str | None = Header(default=None, alias="X-Request-ID"),
     x_correlation_id: str | None = Header(default=None, alias="X-Correlation-ID"),
-) -> VerifyResponse:
+):
     """
     Public image verification endpoint.
 
-    V1.1 accepts a base64 image payload and orchestrates:
+    It accepts a base64 image payload and orchestrates:
     - age-decision-core /estimate
     - age-decision-antispoof /check
     - consolidated decision
-    - global cred score
+    - global Credona score
     - privacy metadata
     - ZK-ready metadata
     """
@@ -78,23 +92,60 @@ async def verify(
         )
         return VerifyResponse(**result)
 
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "request_id": request_id,
-                "correlation_id": correlation_id,
-                "error": str(exc),
+    except ValueError:
+        decision_service.log_event(
+            event="verification_rejected",
+            request_id=request_id,
+            correlation_id=correlation_id,
+            extra_data={
+                "error_type": "validation_error",
+                "error_code": "invalid_base64_image",
             },
-        ) from exc
+        )
 
-    except Exception as exc:
-        raise HTTPException(
-            status_code=502,
-            detail={
-                "request_id": request_id,
-                "correlation_id": correlation_id,
-                "error": "downstream_service_error",
-                "message": str(exc),
+        return _error_response(
+            status_code=400,
+            request_id=request_id,
+            correlation_id=correlation_id,
+            code="invalid_base64_image",
+            message="Invalid request.",
+        )
+
+    except Exception:
+        decision_service.log_event(
+            event="verification_failed",
+            request_id=request_id,
+            correlation_id=correlation_id,
+            extra_data={
+                "error_type": "downstream_error",
+                "error_code": "downstream_service_error",
             },
-        ) from exc
+        )
+
+        return _error_response(
+            status_code=502,
+            request_id=request_id,
+            correlation_id=correlation_id,
+            code="downstream_service_error",
+            message="An upstream service error has occurred.",
+        )
+
+
+def _error_response(
+    status_code: int,
+    request_id: str,
+    correlation_id: str,
+    code: str,
+    message: str,
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "request_id": request_id,
+            "correlation_id": correlation_id,
+            "error": {
+                "code": code,
+                "message": message,
+            },
+        },
+    )

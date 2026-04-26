@@ -25,7 +25,7 @@ class DecisionService:
     - downstream service calls
     - response normalization
     - final decision aggregation
-    - global cred score computation
+    - global Credona score computation
     - privacy and ZK-ready metadata
     """
 
@@ -129,7 +129,7 @@ class DecisionService:
             liveness_check=liveness_check,
         )
 
-        cred_score = self.compute_cred_score(
+        cred_global_score = self.compute_cred_global_score(
             age_check=age_check,
             liveness_check=liveness_check,
         )
@@ -144,7 +144,8 @@ class DecisionService:
             "request_id": request_id,
             "correlation_id": correlation_id,
             "decision": decision,
-            "cred_score": cred_score,
+            "cred_global_score": cred_global_score,
+            "cred_score": cred_global_score,
             "age_check": age_check,
             "liveness_check": liveness_check,
             "privacy": build_privacy_metadata(),
@@ -164,7 +165,8 @@ class DecisionService:
             correlation_id=correlation_id,
             extra_data={
                 "decision": decision,
-                "cred_score": cred_score,
+                "cred_global_score": cred_global_score,
+                "cred_score": cred_global_score,
                 "reason": reason,
             },
         )
@@ -222,7 +224,7 @@ class DecisionService:
 
         return "deny"
 
-    def compute_cred_score(
+    def compute_cred_global_score(
         self,
         age_check: AgeCheck,
         liveness_check: LivenessCheck,
@@ -237,6 +239,19 @@ class DecisionService:
         liveness_score = float(liveness_check.get("cred_antispoof_score", 0.0))
 
         return round(min(age_score, liveness_score), 4)
+
+    def compute_cred_score(
+        self,
+        age_check: AgeCheck,
+        liveness_check: LivenessCheck,
+    ) -> float:
+        """
+        Backward-compatible alias for the global Credona score.
+        """
+        return self.compute_cred_global_score(
+            age_check=age_check,
+            liveness_check=liveness_check,
+        )
 
     def build_reason(
         self,

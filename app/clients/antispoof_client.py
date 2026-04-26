@@ -52,13 +52,13 @@ class AntispoofClient:
 
     def _raise_for_status(self, response: httpx.Response, service: str) -> None:
         """
-        Raise explicit downstream errors with response body.
+        Raise a stable downstream error without exposing response internals.
         """
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as exc:
             raise RuntimeError(
-                f"{service}_request_failed status={response.status_code} body={response.text}"
+                f"{service}_request_failed status={response.status_code}"
             ) from exc
 
 

@@ -28,6 +28,17 @@ class VerifyRequest(BaseModel):
     confidence_threshold: Optional[float] = Field(default=None, examples=[0.8])
 
 
+class ErrorDetail(BaseModel):
+    code: str
+    message: str
+
+
+class ErrorResponse(BaseModel):
+    request_id: str
+    correlation_id: str
+    error: ErrorDetail
+
+
 class NormalizedCheckResponse(BaseModel):
     status: Literal["passed", "failed", "unknown"]
     decision: Literal["allow", "deny"]
@@ -67,6 +78,7 @@ class VerifyResponse(BaseModel):
     request_id: str
     correlation_id: str
     decision: Literal["allow", "deny"]
+    cred_global_score: float
     cred_score: float
     age_check: AgeCheckResponse
     liveness_check: LivenessCheckResponse

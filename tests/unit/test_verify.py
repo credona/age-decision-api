@@ -17,6 +17,10 @@ def test_verify_without_body():
 def test_verify_invalid_base64():
     response = client.post(
         "/verify",
+        headers={
+            "X-Request-ID": "test-request-invalid",
+            "X-Correlation-ID": "test-correlation-invalid",
+        },
         json={
             "image_base64": "invalid-base64",
         },
@@ -26,7 +30,14 @@ def test_verify_invalid_base64():
 
     data = response.json()
 
-    assert data["detail"]["error"] == "invalid_base64_image"
+    assert data == {
+        "request_id": "test-request-invalid",
+        "correlation_id": "test-correlation-invalid",
+        "error": {
+            "code": "invalid_base64_image",
+            "message": "Invalid request.",
+        },
+    }
 
 
 def test_verify_success(monkeypatch):
@@ -43,6 +54,7 @@ def test_verify_success(monkeypatch):
             "request_id": request_id,
             "correlation_id": correlation_id,
             "decision": "allow",
+            "cred_global_score": 0.8,
             "cred_score": 0.8,
             "age_check": {
                 "status": "passed",
@@ -106,6 +118,7 @@ def test_verify_success(monkeypatch):
     assert data["request_id"] == "test-request-001"
     assert data["correlation_id"] == "test-correlation-001"
     assert data["decision"] == "allow"
+    assert data["cred_global_score"] == 0.8
     assert data["cred_score"] == 0.8
     assert data["age_check"]["cred_decision_score"] == 0.8
     assert data["liveness_check"]["cred_antispoof_score"] == 0.99
