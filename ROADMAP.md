@@ -63,6 +63,21 @@ v2.0.0 -> trust and proof verification milestone
 - [x] Document Docker image usage
 - [x] Document automation workflows
 
+<h3>v1.0.2 - Security and Dependency Maintenance</h3>
+
+- [x] Update GitHub Actions
+- [x] Update FastAPI
+- [x] Update Pydantic
+- [x] Update Uvicorn
+- [x] Update Requests
+- [x] Update Pytest
+- [x] Update HTTPX
+- [x] Keep Python 3.11 runtime for service compatibility
+- [x] Validate Docker runtime after dependency updates
+- [x] Validate `/health` endpoint
+- [x] Validate `/ready` endpoint
+- [x] Validate `/verify` endpoint with real image
+
 <h3>v1.x - API Improvements</h3>
 
 - [ ] Add rate limiting
@@ -78,6 +93,9 @@ v2.0.0 -> trust and proof verification milestone
 - [ ] Add downstream retry strategy
 - [ ] Add OpenAPI examples
 - [ ] Add integration tests with real Docker services
+- [ ] Upgrade Docker runtime from Python 3.11 to Python 3.14
+- [ ] Validate API runtime compatibility with Python 3.14
+- [ ] Validate downstream service compatibility with Python 3.14
 
 <h3>v2 - Trust and Identity</h3>
 
