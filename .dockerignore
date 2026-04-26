@@ -1,13 +1,36 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Env
 .env
 .env.*
+
+# Git
 .git
 .gitignore
-Dockerfile
-docker-compose.yml
+
+# CI/CD
+.github/
+
+# Dev / tests
 tests/
-.cache/
 .pytest_cache/
+.cache/
+
+# Docs
+README.md
+ROADMAP.md
+
+# Local artifacts
+*.log
+*.sqlite3
+
+# Docker dev
+docker-compose.dev.yml
+
+# IDE
+.vscode/
+.idea/
