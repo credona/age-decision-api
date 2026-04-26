@@ -22,7 +22,8 @@ The API exposes a single verification endpoint that:
 - calls `age-decision-core` for age estimation
 - calls `age-decision-antispoof` for anti-spoofing
 - aggregates results into a single decision
-- computes a global `cred_score`
+- computes a global `cred_global_score`
+- keeps `cred_score` as a temporary compatibility alias
 - returns privacy metadata
 - exposes a ZK-ready contract
 - propagates `request_id` and `correlation_id`
@@ -44,9 +45,11 @@ age-decision-api
 <h2>Features</h2>
 
 - Unified decision: `allow / deny`
-- Credona scoring system: `cred_score`
+- Global Credona score: `cred_global_score`
+- Legacy-compatible score alias: `cred_score`
 - Core decision score: `cred_decision_score`
 - Anti-spoof score: `cred_antispoof_score`
+- Stable error response format
 - Structured JSON logs
 - Request tracing:
   - `X-Request-ID`
@@ -62,12 +65,12 @@ age-decision-api
 
 <h2>Status</h2>
 
-Current version: <b>v1.1.0</b>
+Current version: <b>1.2.0</b>
 
 Validated status:
 
 ```text
-17 passed
+22 passed
 ```
 
 <hr>
@@ -192,16 +195,6 @@ Official GHCR image:
 ghcr.io/credona/age-decision-api
 ```
 
-Available tags after release:
-
-```text
-ghcr.io/credona/age-decision-api:v1.0.1
-ghcr.io/credona/age-decision-api:v1.0.2
-ghcr.io/credona/age-decision-api:v1.0.3
-ghcr.io/credona/age-decision-api:v1.1.0
-ghcr.io/credona/age-decision-api:latest
-```
-
 Run the image-based stack:
 
 ```bash
@@ -284,6 +277,7 @@ curl -X POST http://localhost:8002/verify \
   "request_id": "test-request-001",
   "correlation_id": "test-correlation-001",
   "decision": "allow",
+  "cred_global_score": 0.8,
   "cred_score": 0.8,
   "age_check": {
     "status": "passed",
@@ -318,11 +312,37 @@ curl -X POST http://localhost:8002/verify \
 }
 ```
 
+<h3>Error response</h3>
+
+Error responses follow a stable JSON format.
+
+The API does not expose internal exception details.
+
+```json
+{
+  "request_id": "test-request-001",
+  "correlation_id": "test-correlation-001",
+  "error": {
+    "code": "invalid_base64_image",
+    "message": "Invalid request."
+  }
+}
+```
+
+Known error codes:
+
+```text
+invalid_base64_image
+downstream_service_error
+```
+
+The `message` field is intentionally generic and stable. Detailed error context is available only in server logs.
+
 <hr>
 
-<h2>Cred Score</h2>
+<h2>Cred Global Score</h2>
 
-The `cred_score` represents the reliability of the final decision.
+The `cred_global_score` represents the reliability of the final verification decision.
 
 - Range: `0.0 -> 1.0`
 - Computed as the minimum of:
@@ -330,6 +350,8 @@ The `cred_score` represents the reliability of the final decision.
   - `cred_antispoof_score`
 
 A low score means that at least one required signal is weak.
+
+`cred_score` is still returned as a temporary compatibility alias for `cred_global_score`.
 
 <hr>
 
@@ -353,7 +375,7 @@ Default behavior:
 
 The current version exposes a proof-friendly response contract.
 
-It does not generate a real cryptographic Zero-Knowledge proof in `v1.1.0`.
+It does not generate a real cryptographic Zero-Knowledge proof yet.
 
 The goal is to prepare future verification flows where a decision can be proven without exposing:
 
@@ -376,6 +398,7 @@ Logs are structured JSON events.
   "correlation_id": "test-correlation-001",
   "data": {
     "decision": "allow",
+    "cred_global_score": 0.8,
     "cred_score": 0.8
   }
 }
@@ -409,7 +432,7 @@ docker compose -f docker-compose.dev.yml exec age-decision-api pytest
 Current result:
 
 ```text
-17 passed
+22 passed
 ```
 
 <hr>
@@ -428,7 +451,7 @@ It does not:
 
 - perform identity verification
 - store images
-- generate real Zero-Knowledge proofs in `v1.1.0`
+- generate real Zero-Knowledge proofs
 - replace certified legal identity checks
 - perform face recognition
 

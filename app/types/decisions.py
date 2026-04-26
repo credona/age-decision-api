@@ -43,6 +43,7 @@ class VerifyResult(TypedDict, total=False):
     request_id: str
     correlation_id: str
     decision: PublicDecision
+    cred_global_score: float
     cred_score: float
     age_check: AgeCheck
     liveness_check: LivenessCheck

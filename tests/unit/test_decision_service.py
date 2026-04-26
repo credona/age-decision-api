@@ -35,7 +35,28 @@ def test_decode_invalid_base64_image():
         service.decode_base64_image("invalid-base64")
 
 
-def test_compute_cred_score_uses_lowest_score():
+def test_compute_cred_global_score_uses_lowest_score():
+    service = DecisionService()
+
+    result = service.compute_cred_global_score(
+        age_check={
+            "status": "passed",
+            "decision": "allow",
+            "reason": None,
+            "cred_decision_score": 0.82,
+        },
+        liveness_check={
+            "status": "passed",
+            "decision": "allow",
+            "reason": None,
+            "cred_antispoof_score": 0.97,
+        },
+    )
+
+    assert result == 0.82
+
+
+def test_compute_cred_score_alias_uses_lowest_score():
     service = DecisionService()
 
     result = service.compute_cred_score(

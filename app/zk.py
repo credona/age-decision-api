@@ -5,8 +5,8 @@ def build_zk_proof_metadata() -> ZkProofMetadata:
     """
     Build Zero-Knowledge readiness metadata.
 
-    V1.1 does not generate a cryptographic proof yet.
-    It exposes a stable contract so that a future ZK verifier can be added
+    The API does not generate a cryptographic proof yet.
+    It exposes a stable contract so that a future verifier can be added
     without changing the public response shape.
     """
     return {
