@@ -1,0 +1,18 @@
+services:
+  age-decision-api:
+    container_name: age-decision-api
+    build: .
+    ports:
+      - "${APP_PORT:-8002}:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+    restart: unless-stopped
+    networks:
+      - age-decision-network
+
+networks:
+  age-decision-network:
+    name: age-decision-network
+    driver: bridge
