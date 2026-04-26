@@ -1,6 +1,8 @@
 import os
 from dataclasses import dataclass
 
+from app.version import API_VERSION
+
 
 @dataclass(frozen=True)
 class Settings:
@@ -9,7 +11,7 @@ class Settings:
     """
 
     app_name: str = os.getenv("APP_NAME", "age-decision-api")
-    api_version: str = os.getenv("API_VERSION", "1.1.0")
+    api_version: str = os.getenv("API_VERSION", API_VERSION)
     api_description: str = os.getenv(
         "API_DESCRIPTION",
         "Public API gateway for Age Decision services.",
