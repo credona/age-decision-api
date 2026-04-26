@@ -62,7 +62,7 @@ age-decision-api
 
 <h2>Status</h2>
 
-Current version: <b>v1.0.2</b>
+Current version: <b>v1.0.3</b>
 
 Validated status:
 
@@ -197,6 +197,7 @@ Available tags after release:
 ```text
 ghcr.io/credona/age-decision-api:v1.0.1
 ghcr.io/credona/age-decision-api:v1.0.2
+ghcr.io/credona/age-decision-api:v1.0.3
 ghcr.io/credona/age-decision-api:latest
 ```
 
@@ -351,7 +352,7 @@ Default behavior:
 
 The current version exposes a proof-friendly response contract.
 
-It does not generate a real cryptographic Zero-Knowledge proof in `v1.0.2`.
+It does not generate a real cryptographic Zero-Knowledge proof in `v1.0.3`.
 
 The goal is to prepare future verification flows where a decision can be proven without exposing:
 
@@ -426,7 +427,7 @@ It does not:
 
 - perform identity verification
 - store images
-- generate real Zero-Knowledge proofs in `v1.0.2`
+- generate real Zero-Knowledge proofs in `v1.0.3`
 - replace certified legal identity checks
 - perform face recognition
 
