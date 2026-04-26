@@ -1,13 +1,32 @@
 services:
+  age-decision-core:
+    build:
+      context: ../age-decision-core
+      dockerfile: Dockerfile.dev
+    networks:
+      - age-decision-network
+
+  age-decision-antispoof:
+    build:
+      context: ../age-decision-antispoof
+      dockerfile: Dockerfile.dev
+    networks:
+      - age-decision-network
+
   age-decision-api:
     container_name: age-decision-api
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
       - "${APP_PORT:-8002}:8000"
     env_file:
       - .env
     volumes:
       - ./:/app
+    depends_on:
+      - age-decision-core
+      - age-decision-antispoof
     restart: unless-stopped
     networks:
       - age-decision-network
