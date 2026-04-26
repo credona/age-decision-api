@@ -78,6 +78,15 @@ v2.0.0 -> trust and proof verification milestone
 - [x] Validate `/ready` endpoint
 - [x] Validate `/verify` endpoint with real image
 
+<h3>v1.0.3 - GitHub Actions Maintenance</h3>
+
+- [x] Update actions/checkout
+- [x] Update docker/metadata-action
+- [x] Update docker/build-push-action
+- [x] Validate CI workflow execution
+- [x] Validate Docker build workflow
+- [x] Validate release workflow
+
 <h3>v1.x - API Improvements</h3>
 
 - [ ] Add rate limiting
