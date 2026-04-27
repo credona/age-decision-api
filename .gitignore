@@ -12,3 +12,12 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+
+# Model binaries are not part of the API gateway
+models/
+**/models/
+*.onnx
+*.pt
+*.pth
+*.tflite
+*.bin

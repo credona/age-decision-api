@@ -36,6 +36,23 @@ EXPOSE_RAW_DOWNSTREAM_RESPONSES=false
 
 <hr>
 
+<h2>Runtime dependencies</h2>
+
+The API gateway depends on downstream services:
+
+```text
+age-decision-core
+age-decision-antispoof
+```
+
+It does not run local model inference.
+
+It does not download or load model files.
+
+Model lifecycle is owned by the downstream services.
+
+<hr>
+
 <h2>Run local stack</h2>
 
 ```bash

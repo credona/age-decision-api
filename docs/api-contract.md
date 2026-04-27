@@ -27,6 +27,21 @@ If no correlation identifier is provided, the API uses the request identifier as
 
 <hr>
 
+<h2>Gateway responsibility</h2>
+
+The API gateway orchestrates downstream services.
+
+It does not perform model inference locally.
+
+It does not load, download, store, or redistribute model binaries.
+
+Model lifecycle and inference are delegated to:
+
+- `age-decision-core`
+- `age-decision-antispoof`
+
+<hr>
+
 <h2>Response</h2>
 
 ```json
@@ -170,6 +185,8 @@ The API gateway:
 - does not store biometric templates
 - does not log raw image content
 - does not expose downstream raw responses by default
+- does not load model binaries
+- does not redistribute model binaries
 - orchestrates downstream calls in memory
 
 <hr>

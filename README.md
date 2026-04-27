@@ -14,6 +14,8 @@ It orchestrates age estimation and anti-spoofing services to produce a unified, 
 
 It does not perform model inference locally.
 
+It does not load, store, download, or redistribute machine learning model binaries.
+
 <hr>
 
 <h2>Documentation</h2>
@@ -47,6 +49,14 @@ The API gateway is responsible for:
 - privacy metadata exposure
 - ZK-ready metadata exposure
 
+The API gateway is not responsible for:
+
+- direct age model inference
+- direct anti-spoof model inference
+- model file management
+- model download
+- model redistribution
+
 <hr>
 
 <h2>Quickstart</h2>
@@ -77,6 +87,10 @@ docker compose -f docker-compose.dev.yml exec age-decision-api pytest
 ```text
 ghcr.io/credona/age-decision-api
 ```
+
+The API image contains only the gateway runtime.
+
+It should not contain ONNX, PyTorch, TensorFlow, or other model binaries.
 
 <hr>
 
@@ -110,6 +124,9 @@ This service does not:
 - perform local anti-spoofing
 - perform identity verification
 - store images
+- store biometric templates
+- download model files
+- redistribute model files
 - generate real Zero-Knowledge proofs
 - replace certified legal identity checks
 - perform face recognition
