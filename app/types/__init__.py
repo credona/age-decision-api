@@ -1,21 +1,19 @@
 from .decisions import (
     AgeCheck,
-    CheckStatus,
     LivenessCheck,
-    NormalizedCheck,
     PrivacyMetadata,
     PublicDecision,
+    ThresholdPolicy,
     VerifyResult,
     ZkProofMetadata,
 )
 
 __all__ = [
     "AgeCheck",
-    "CheckStatus",
     "LivenessCheck",
-    "NormalizedCheck",
     "PrivacyMetadata",
     "PublicDecision",
+    "ThresholdPolicy",
     "VerifyResult",
     "ZkProofMetadata",
 ]

@@ -22,10 +22,8 @@ class ReadyResponse(BaseModel):
 
 class VerifyRequest(BaseModel):
     image_base64: str = Field(..., min_length=1)
-    country: Optional[str] = Field(default=None, examples=["FR", "US"])
+    majority_country: Optional[str] = Field(default=None, examples=["FR", "US"])
     age_threshold: Optional[int] = Field(default=None, examples=[18, 21])
-    age_margin: Optional[int] = Field(default=None, examples=[2])
-    confidence_threshold: Optional[float] = Field(default=None, examples=[0.8])
 
 
 class ErrorDetail(BaseModel):
@@ -39,6 +37,13 @@ class ErrorResponse(BaseModel):
     error: ErrorDetail
 
 
+class ThresholdPolicy(BaseModel):
+    type: Literal["minimum_age"]
+    value: int
+    source: Literal["explicit", "majority_country", "default"]
+    majority_country: Optional[str] = None
+
+
 class NormalizedCheckResponse(BaseModel):
     status: Literal["passed", "failed", "unknown"]
     decision: Literal["allow", "deny"]
@@ -46,14 +51,11 @@ class NormalizedCheckResponse(BaseModel):
 
 
 class AgeCheckResponse(NormalizedCheckResponse):
-    estimated_age: Optional[float] = None
-    confidence: Optional[float] = None
-    is_adult: Optional[bool] = None
+    threshold: ThresholdPolicy
     cred_decision_score: float
 
 
 class LivenessCheckResponse(NormalizedCheckResponse):
-    confidence: Optional[float] = None
     is_real: Optional[bool] = None
     spoof_detected: Optional[bool] = None
     cred_antispoof_score: float
@@ -79,7 +81,6 @@ class VerifyResponse(BaseModel):
     correlation_id: str
     decision: Literal["allow", "deny"]
     cred_global_score: float
-    cred_score: float
     age_check: AgeCheckResponse
     liveness_check: LivenessCheckResponse
     privacy: PrivacyMetadataResponse

@@ -67,10 +67,8 @@ class DecisionService:
         image_base64: str,
         request_id: str | None = None,
         correlation_id: str | None = None,
-        country: str | None = None,
+        majority_country: str | None = None,
         age_threshold: int | None = None,
-        age_margin: int | None = None,
-        confidence_threshold: float | None = None,
     ) -> VerifyResult:
         """
         Verify a base64-encoded image.
@@ -89,10 +87,8 @@ class DecisionService:
         }
 
         core_params = self.build_core_params(
-            country=country,
+            majority_country=majority_country,
             age_threshold=age_threshold,
-            age_margin=age_margin,
-            confidence_threshold=confidence_threshold,
         )
 
         self.log_event(
@@ -101,7 +97,7 @@ class DecisionService:
             correlation_id=correlation_id,
             extra_data={
                 "input_type": "image_base64",
-                "country": country,
+                "majority_country": majority_country,
                 "age_threshold": age_threshold,
             },
         )
@@ -145,7 +141,6 @@ class DecisionService:
             "correlation_id": correlation_id,
             "decision": decision,
             "cred_global_score": cred_global_score,
-            "cred_score": cred_global_score,
             "age_check": age_check,
             "liveness_check": liveness_check,
             "privacy": build_privacy_metadata(),
@@ -166,7 +161,6 @@ class DecisionService:
             extra_data={
                 "decision": decision,
                 "cred_global_score": cred_global_score,
-                "cred_score": cred_global_score,
                 "reason": reason,
             },
         )
@@ -191,25 +185,17 @@ class DecisionService:
 
     def build_core_params(
         self,
-        country: str | None,
+        majority_country: str | None,
         age_threshold: int | None,
-        age_margin: int | None,
-        confidence_threshold: float | None,
     ) -> dict:
-        """Build query parameters sent to age-decision-core."""
+        """Build query parameters sent to age-decision-core v2."""
         params = {}
 
-        if country is not None:
-            params["country"] = country
+        if majority_country is not None:
+            params["majority_country"] = majority_country
 
         if age_threshold is not None:
             params["age_threshold"] = age_threshold
-
-        if age_margin is not None:
-            params["age_margin"] = age_margin
-
-        if confidence_threshold is not None:
-            params["confidence_threshold"] = confidence_threshold
 
         return params
 
@@ -239,19 +225,6 @@ class DecisionService:
         liveness_score = float(liveness_check.get("cred_antispoof_score", 0.0))
 
         return round(min(age_score, liveness_score), 4)
-
-    def compute_cred_score(
-        self,
-        age_check: AgeCheck,
-        liveness_check: LivenessCheck,
-    ) -> float:
-        """
-        Backward-compatible alias for the global Credona score.
-        """
-        return self.compute_cred_global_score(
-            age_check=age_check,
-            liveness_check=liveness_check,
-        )
 
     def build_reason(
         self,

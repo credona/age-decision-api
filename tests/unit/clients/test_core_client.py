@@ -10,7 +10,19 @@ class MockTransport(AsyncBaseTransport):
     async def handle_async_request(self, request: Request) -> Response:
         return Response(
             status_code=200,
-            json={"decision": "adult", "is_adult": True},
+            json={
+                "decision": "match",
+                "threshold": {
+                    "type": "minimum_age",
+                    "value": 18,
+                    "source": "majority_country",
+                    "majority_country": "FR",
+                },
+                "cred_decision_score": {
+                    "score": 0.88,
+                    "level": "high",
+                },
+            },
         )
 
 
@@ -21,7 +33,6 @@ async def test_core_client_estimate_image():
     transport = MockTransport()
 
     async with AsyncClient(transport=transport) as http_client:
-        # Monkeypatch simple
         client._client = http_client
 
         result = await client.estimate_image(
@@ -31,4 +42,6 @@ async def test_core_client_estimate_image():
             headers={},
         )
 
-    assert result["decision"] == "adult"
+    assert result["decision"] == "match"
+    assert result["threshold"]["majority_country"] == "FR"
+    assert result["cred_decision_score"]["score"] == 0.88

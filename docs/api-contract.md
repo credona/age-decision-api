@@ -9,10 +9,8 @@ This document describes the public response contract exposed by the API gateway.
 ```json
 {
   "image_base64": "base64-encoded-image",
-  "country": "FR",
-  "age_threshold": 18,
-  "age_margin": 2,
-  "confidence_threshold": 0.8
+  "majority_country": "FR",
+  "age_threshold": 18
 }
 ```
 
@@ -50,21 +48,22 @@ Model lifecycle and inference are delegated to:
   "correlation_id": "test-correlation-001",
   "decision": "allow",
   "cred_global_score": 0.8,
-  "cred_score": 0.8,
   "age_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,
-    "estimated_age": 76.0,
-    "confidence": 0.8,
-    "is_adult": true,
+    "threshold": {
+      "type": "minimum_age",
+      "value": 18,
+      "source": "majority_country",
+      "majority_country": "FR"
+    },
     "cred_decision_score": 0.8
   },
   "liveness_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,
-    "confidence": 0.99,
     "is_real": true,
     "spoof_detected": false,
     "cred_antispoof_score": 0.99
@@ -80,7 +79,7 @@ Model lifecycle and inference are delegated to:
     "zk_ready": true,
     "proof_type": "interactive_zero_knowledge_ready",
     "proof_status": "not_generated",
-    "statement": "The API is ready to prove an age decision without exposing the raw image or estimated age."
+    "statement": "The API is ready to prove a threshold decision without exposing the raw image, estimated age, or raw model scores."
   },
   "reason": null
 }
@@ -108,10 +107,14 @@ It contains:
 - `status`
 - `decision`
 - `reason`
-- `estimated_age`
-- `confidence`
-- `is_adult`
+- `threshold`
 - `cred_decision_score`
+
+It does not contain:
+
+- estimated age
+- raw confidence
+- `is_adult`
 
 <hr>
 
@@ -124,10 +127,16 @@ It contains:
 - `status`
 - `decision`
 - `reason`
-- `confidence`
 - `is_real`
 - `spoof_detected`
 - `cred_antispoof_score`
+
+It does not contain:
+
+- raw confidence
+- spoof score
+- internal threshold
+- model details
 
 <hr>
 
@@ -135,7 +144,7 @@ It contains:
 
 <h3>cred_decision_score</h3>
 
-Score produced by the Core service for the age decision.
+Score produced by the Core service for the age threshold decision.
 
 <h3>cred_antispoof_score</h3>
 
@@ -151,12 +160,6 @@ It is computed conservatively as the minimum of:
 cred_decision_score
 cred_antispoof_score
 ```
-
-<h3>cred_score</h3>
-
-Temporary compatibility alias for `cred_global_score`.
-
-New integrations should read `cred_global_score`.
 
 <hr>
 
@@ -185,6 +188,9 @@ The API gateway:
 - does not store biometric templates
 - does not log raw image content
 - does not expose downstream raw responses by default
+- does not expose estimated age
+- does not expose raw model confidence
+- does not expose raw anti-spoof model details
 - does not load model binaries
 - does not redistribute model binaries
 - orchestrates downstream calls in memory
