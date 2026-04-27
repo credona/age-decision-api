@@ -56,20 +56,28 @@ def test_compute_cred_global_score_uses_lowest_score():
     assert result == 0.82
 
 
-def test_compute_cred_score_alias_uses_lowest_score():
+def test_compute_cred_global_score_uses_lowest_score():
     service = DecisionService()
 
-    result = service.compute_cred_score(
+    result = service.compute_cred_global_score(
         age_check={
             "status": "passed",
             "decision": "allow",
             "reason": None,
+            "threshold": {
+                "type": "minimum_age",
+                "value": 18,
+                "source": "default",
+                "majority_country": None,
+            },
             "cred_decision_score": 0.82,
         },
         liveness_check={
             "status": "passed",
             "decision": "allow",
             "reason": None,
+            "is_real": True,
+            "spoof_detected": False,
             "cred_antispoof_score": 0.97,
         },
     )

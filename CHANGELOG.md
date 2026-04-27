@@ -6,6 +6,27 @@ Global project direction is tracked in the central Age Decision repository.
 
 <hr>
 
+<h2>2.0.0</h2>
+
+- Introduced privacy-first public verification contract.
+- Aligned API response with Core 2.0.0 threshold decision contract.
+- Aligned API response with AntiSpoof 2.0.0 public contract.
+- Replaced `country` request field with `majority_country`.
+- Removed `age_margin` and `confidence_threshold` from the public request contract.
+- Removed `estimated_age` from public verification responses.
+- Removed raw age confidence from public verification responses.
+- Removed `is_adult` from public verification responses.
+- Removed liveness raw confidence from public verification responses.
+- Removed legacy `cred_score` compatibility alias from public verification responses.
+- Kept `cred_global_score` as the only global Credona score.
+- Kept `cred_decision_score` as the normalized Core score.
+- Kept `cred_antispoof_score` as the normalized AntiSpoof score.
+- Updated downstream normalization for `match`, `no_match`, and `uncertain` Core decisions.
+- Updated downstream normalization for privacy-first AntiSpoof responses.
+- Updated public documentation and contract tests.
+
+<hr>
+
 <h2>1.2.1</h2>
 
 - Documentation structure simplified.

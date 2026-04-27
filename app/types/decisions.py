@@ -1,24 +1,28 @@
-from typing import Any, Literal, Optional, TypedDict
+from typing import Literal, Optional, TypedDict
+
 
 PublicDecision = Literal["allow", "deny"]
-CheckStatus = Literal["passed", "failed", "unknown"]
 
 
-class NormalizedCheck(TypedDict):
-    status: CheckStatus
+class ThresholdPolicy(TypedDict):
+    type: Literal["minimum_age"]
+    value: int
+    source: Literal["explicit", "majority_country", "default"]
+    majority_country: Optional[str]
+
+
+class AgeCheck(TypedDict):
+    status: Literal["passed", "failed", "unknown"]
     decision: PublicDecision
     reason: Optional[str]
-
-
-class AgeCheck(NormalizedCheck, total=False):
-    estimated_age: Optional[float]
-    confidence: Optional[float]
-    is_adult: Optional[bool]
+    threshold: ThresholdPolicy
     cred_decision_score: float
 
 
-class LivenessCheck(NormalizedCheck, total=False):
-    confidence: Optional[float]
+class LivenessCheck(TypedDict):
+    status: Literal["passed", "failed", "unknown"]
+    decision: PublicDecision
+    reason: Optional[str]
     is_real: Optional[bool]
     spoof_detected: Optional[bool]
     cred_antispoof_score: float
@@ -44,10 +48,9 @@ class VerifyResult(TypedDict, total=False):
     correlation_id: str
     decision: PublicDecision
     cred_global_score: float
-    cred_score: float
     age_check: AgeCheck
     liveness_check: LivenessCheck
     privacy: PrivacyMetadata
     zk_proof: ZkProofMetadata
     reason: Optional[str]
-    raw: dict[str, Any]
+    raw: dict

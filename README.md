@@ -10,7 +10,7 @@
 
 Age Decision API is the public gateway of the Age Decision ecosystem.
 
-It orchestrates age estimation and anti-spoofing services to produce a unified, privacy-first verification decision.
+It orchestrates threshold age decision and anti-spoofing services to produce a unified, privacy-first verification decision.
 
 It does not perform model inference locally.
 
@@ -104,7 +104,6 @@ The endpoint accepts a base64 image and returns:
 
 - `decision`
 - `cred_global_score`
-- `cred_score`
 - `age_check`
 - `liveness_check`
 - `privacy`
@@ -112,7 +111,15 @@ The endpoint accepts a base64 image and returns:
 - `request_id`
 - `correlation_id`
 
-`cred_score` is kept as a temporary compatibility alias for `cred_global_score`.
+The public response does not expose:
+
+- estimated age
+- raw age confidence
+- `is_adult`
+- raw liveness confidence
+- spoof score
+- downstream model details
+- legacy `cred_score` alias
 
 <hr>
 

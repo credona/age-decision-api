@@ -125,7 +125,7 @@ curl -X POST http://localhost:8002/verify \
   -H "Content-Type: application/json" \
   -H "X-Request-ID: test-request-001" \
   -H "X-Correlation-ID: test-correlation-001" \
-  -d "{\"image_base64\":\"$IMAGE_BASE64\",\"country\":\"FR\",\"age_threshold\":18}"
+  -d "{\"image_base64\":\"$IMAGE_BASE64\",\"majority_country\":\"FR\",\"age_threshold\":18}"
 ```
 
 Example response:
@@ -136,19 +136,22 @@ Example response:
   "correlation_id": "test-correlation-001",
   "decision": "allow",
   "cred_global_score": 0.8,
-  "cred_score": 0.8,
   "age_check": {
     "status": "passed",
     "decision": "allow",
-    "estimated_age": 76.0,
-    "confidence": 0.8,
-    "is_adult": true,
+    "reason": null,
+    "threshold": {
+      "type": "minimum_age",
+      "value": 18,
+      "source": "majority_country",
+      "majority_country": "FR"
+    },
     "cred_decision_score": 0.8
   },
   "liveness_check": {
     "status": "passed",
     "decision": "allow",
-    "confidence": 0.99,
+    "reason": null,
     "is_real": true,
     "spoof_detected": false,
     "cred_antispoof_score": 0.99
@@ -164,11 +167,25 @@ Example response:
     "zk_ready": true,
     "proof_type": "interactive_zero_knowledge_ready",
     "proof_status": "not_generated",
-    "statement": "The API is ready to prove an age decision without exposing the raw image or estimated age."
+    "statement": "The API is ready to prove a threshold decision without exposing the raw image, estimated age, or raw model scores."
   },
   "reason": null
 }
 ```
+
+<hr>
+
+<h2>Public privacy contract</h2>
+
+The public `/verify` response does not expose:
+
+- estimated age
+- raw age confidence
+- `is_adult`
+- raw liveness confidence
+- spoof score
+- downstream model details
+- legacy `cred_score` alias
 
 <hr>
 

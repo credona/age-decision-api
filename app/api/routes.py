@@ -85,10 +85,8 @@ async def verify(
             image_base64=payload.image_base64,
             request_id=request_id,
             correlation_id=correlation_id,
-            country=payload.country,
+            majority_country=payload.majority_country,
             age_threshold=payload.age_threshold,
-            age_margin=payload.age_margin,
-            confidence_threshold=payload.confidence_threshold,
         )
         return VerifyResponse(**result)
 
