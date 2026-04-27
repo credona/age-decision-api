@@ -34,3 +34,6 @@ docker-compose.dev.yml
 # IDE
 .vscode/
 .idea/
+
+*.md
+!README.md
