@@ -30,11 +30,48 @@ dist
 build
 *.egg-info
 
-# Model binaries are not part of the API gateway.
-models/
-**/models/
-*.onnx
-*.pt
-*.pth
-*.tflite
-*.bin
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
+.env.*
+
+# Git
+.git
+.gitignore
+
+# CI/CD
+.github/
+
+# Dev / tests
+tests/
+.pytest_cache/
+.cache/
+
+# Local artifacts
+*.log
+*.sqlite3
+
+# Docker dev
+docker-compose.dev.yml
+docker-compose.override.yml
+Dockerfile.dev
+
+# IDE
+.vscode/
+.idea/
+
+# Docs
+*.md
+!README.md
+
+# ML model binaries only
+models/*.onnx
+models/*.pt
+models/*.pth
+models/*.tflite
+models/*.bin
