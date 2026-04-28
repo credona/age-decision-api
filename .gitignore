@@ -10,10 +10,6 @@ __pycache__/
 
 # Git
 .git
-.gitignore
-
-# CI/CD
-.github/
 
 # Dev / tests
 tests/
@@ -37,10 +33,9 @@ Dockerfile.dev
 *.md
 !README.md
 
-# Model binaries are not part of the API gateway
-models/
-*.onnx
-*.pt
-*.pth
-*.tflite
-*.bin
+# ML model binaries only
+models/*.onnx
+models/*.pt
+models/*.pth
+models/*.tflite
+models/*.bin

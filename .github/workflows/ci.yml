@@ -173,12 +173,12 @@ jobs:
               run: docker build -t age-decision-api:ci .
 
             - name: Run Docker container
-              run: docker run -d --name age-decision-api -p 8002:8002 age-decision-api:ci
+              run: docker run -d --name age-decision-api -p 8000:8000 age-decision-api:ci
 
             - name: Wait for service
               run: |
                   for i in {1..30}; do
-                    if curl -fsS http://localhost:8002/health; then
+                    if curl -fsS http://localhost:8000/health; then
                       exit 0
                     fi
 
@@ -194,11 +194,11 @@ jobs:
 
             - name: Check runtime endpoints
               run: |
-                  curl -fsS http://localhost:8002/health
-                  curl -fsS http://localhost:8002/version
+                  curl -fsS http://localhost:8000/health
+                  curl -fsS http://localhost:8000/version
 
             - name: Check readiness endpoint
-              run: curl -fsS http://localhost:8002/ready || true
+              run: curl -fsS http://localhost:8000/ready || true
 
             - name: Cleanup Docker container
               if: always()
