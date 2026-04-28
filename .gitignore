@@ -1,33 +1,46 @@
-.env
-
-.venv/
-venv/
-env/
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Environment
+.env
+.env.*
+
+# Git
+.git
+.gitignore
+
+# CI/CD
+.github/
+
+# Dev / tests
+tests/
 .pytest_cache/
-.mypy_cache/
-.ruff_cache/
 .cache/
-.DS_Store
 
-dist/
-build/
-*.egg-info/
+# Local artifacts
+*.log
+*.sqlite3
 
-# Model binaries are not part of the API gateway.
+# Docker dev
+docker-compose.dev.yml
+docker-compose.override.yml
+Dockerfile.dev
+
+# IDE
+.vscode/
+.idea/
+
+# Docs
+*.md
+!README.md
+
+# Model binaries are not part of the API gateway
 models/
-**/models/
 *.onnx
 *.pt
 *.pth
 *.tflite
 *.bin
-
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-.idea/
-*.swp
