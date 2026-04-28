@@ -11,5 +11,9 @@ def test_health():
     assert response.status_code == 200
     data = response.json()
 
-    assert data["status"] == "ok"
-    assert data["service"] == "age-decision-api"
+    assert data == {
+        "status": "ok",
+        "service": "age-decision-api",
+        "version": "2.1.0",
+        "contract_version": "2.0",
+    }

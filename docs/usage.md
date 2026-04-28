@@ -21,7 +21,6 @@ cp .env.example.dev .env
 Example:
 
 ```env
-APP_NAME=age-decision-api
 APP_ENV=development
 APP_PORT=8002
 
@@ -32,6 +31,21 @@ REQUEST_TIMEOUT=3000
 LOG_LEVEL=info
 
 EXPOSE_RAW_DOWNSTREAM_RESPONSES=false
+```
+
+Project identity metadata is stored in:
+
+```text
+project.json
+```
+
+Runtime environment files must not override:
+
+```text
+service_name
+app_name
+version
+contract_version
 ```
 
 <hr>
@@ -82,12 +96,27 @@ curl -i http://localhost:8002/health
 
 Example response:
 
+<!-- BEGIN:HEALTH_RESPONSE -->
 ```json
-{
-  "status": "ok",
-  "service": "age-decision-api"
-}
+{}
 ```
+<!-- END:HEALTH_RESPONSE -->
+
+<hr>
+
+<h2>Version</h2>
+
+```bash
+curl -i http://localhost:8002/version
+```
+
+Example response:
+
+<!-- BEGIN:VERSION_RESPONSE -->
+```json
+{}
+```
+<!-- END:VERSION_RESPONSE -->
 
 <hr>
 
@@ -99,20 +128,11 @@ curl -i http://localhost:8002/ready
 
 Example response:
 
+<!-- BEGIN:READY_RESPONSE -->
 ```json
-{
-  "status": "ready",
-  "service": "age-decision-api",
-  "core": {
-    "status": "ready",
-    "url": "http://age-decision-core:8000"
-  },
-  "antispoof": {
-    "status": "ready",
-    "url": "http://age-decision-antispoof:8001"
-  }
-}
+{}
 ```
+<!-- END:READY_RESPONSE -->
 
 <hr>
 
@@ -216,6 +236,24 @@ downstream_service_error
 The `message` field is intentionally generic and stable.
 
 Detailed error context is available only in server logs.
+
+<hr>
+
+<h2>Compatibility metadata</h2>
+
+Compatibility metadata is declared in:
+
+```text
+compatibility.json
+```
+
+Generated view:
+
+<!-- BEGIN:COMPATIBILITY_METADATA -->
+```json
+{}
+```
+<!-- END:COMPATIBILITY_METADATA -->
 
 <hr>
 

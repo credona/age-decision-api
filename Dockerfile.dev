@@ -10,13 +10,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.dev.txt .
 
-# Code
-COPY app ./app
-COPY scripts ./scripts
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir -r requirements.dev.txt
 
-# Permissions
+COPY . .
+
 RUN chmod +x /app/scripts/start.sh
 
 EXPOSE 8002

@@ -20,8 +20,10 @@ It does not load, store, download, or redistribute machine learning model binari
 
 <h2>Documentation</h2>
 
+- Repository: https://github.com/credona/age-decision-api
 - Usage: docs/usage.md
 - API contract: docs/api-contract.md
+- Compatibility: docs/compatibility.md
 - Changelog: CHANGELOG.md
 - Contributing: CONTRIBUTING.md
 - Global project: https://github.com/credona/age-decision
@@ -71,8 +73,25 @@ Check the service:
 
 ```bash
 curl -i http://localhost:8002/health
+curl -i http://localhost:8002/version
 curl -i http://localhost:8002/ready
 ```
+
+Expected health response:
+
+<!-- BEGIN:HEALTH_RESPONSE -->
+```json
+{}
+```
+<!-- END:HEALTH_RESPONSE -->
+
+Expected version response:
+
+<!-- BEGIN:VERSION_RESPONSE -->
+```json
+{}
+```
+<!-- END:VERSION_RESPONSE -->
 
 Run tests:
 
@@ -120,6 +139,51 @@ The public response does not expose:
 - spoof score
 - downstream model details
 - legacy `cred_score` alias
+
+<hr>
+
+<h2>Compatibility metadata</h2>
+
+Compatibility metadata is declared in `compatibility.json` and checked by CI.
+
+<!-- BEGIN:COMPATIBILITY_METADATA -->
+```json
+{}
+```
+<!-- END:COMPATIBILITY_METADATA -->
+
+<hr>
+
+<h2>Quality and compatibility checks</h2>
+
+Run tests:
+
+```bash
+docker compose -f docker-compose.dev.yml exec age-decision-api pytest
+```
+
+Run contract tests:
+
+```bash
+docker compose -f docker-compose.dev.yml exec age-decision-api pytest tests/unit/contract
+```
+
+Run quality checks:
+
+```bash
+docker compose -f docker-compose.dev.yml exec age-decision-api ruff check .
+docker compose -f docker-compose.dev.yml exec age-decision-api ruff format --check .
+docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/check_project_metadata.py
+docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/check_compatibility_metadata.py
+```
+
+Update generated documentation blocks:
+
+```bash
+docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/update_readme_examples.py
+docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/update_docs_usage.py
+docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/update_docs_compatibility.py
+```
 
 <hr>
 

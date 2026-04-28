@@ -1,0 +1,19 @@
+{
+  "service": "age-decision-api",
+  "version": "2.1.0",
+  "contract_version": "2.0",
+  "compatible_with": {
+    "age-decision-core": ">=2.0.0 <3.0.0",
+    "age-decision-antispoof": ">=2.0.0 <3.0.0",
+    "age-decision-js": ">=2.0.0 <3.0.0"
+  },
+  "public_contract": {
+    "decision_values": ["allow", "deny"],
+    "score_field": "cred_global_score",
+    "estimated_age_exposed": false,
+    "raw_age_confidence_exposed": false,
+    "raw_liveness_confidence_exposed": false,
+    "downstream_raw_response_exposed_by_default": false,
+    "legacy_cred_score_exposed": false
+  }
+}

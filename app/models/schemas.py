@@ -6,6 +6,8 @@ from pydantic import BaseModel, Field
 class HealthResponse(BaseModel):
     status: str = Field(..., examples=["ok"])
     service: str = Field(..., examples=["age-decision-api"])
+    version: str = Field(..., examples=["2.1.0"])
+    contract_version: str = Field(..., examples=["2.0"])
 
 
 class ServiceReadyStatus(BaseModel):
@@ -16,6 +18,8 @@ class ServiceReadyStatus(BaseModel):
 class ReadyResponse(BaseModel):
     status: Literal["ready", "degraded"]
     service: str
+    version: str
+    contract_version: str
     core: ServiceReadyStatus
     antispoof: ServiceReadyStatus
 

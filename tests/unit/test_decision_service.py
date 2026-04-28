@@ -56,7 +56,7 @@ def test_compute_cred_global_score_uses_lowest_score():
     assert result == 0.82
 
 
-def test_compute_cred_global_score_uses_lowest_score():
+def test_compute_cred_global_score_keeps_lowest_score_when_inputs_are_valid():
     service = DecisionService()
 
     result = service.compute_cred_global_score(
