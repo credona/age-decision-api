@@ -3,7 +3,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
 
-from app.config.settings import settings
+from app.project import project_metadata
 from app.models.schemas import (
     ErrorResponse,
     HealthResponse,
@@ -25,8 +25,18 @@ def health() -> HealthResponse:
     """
     return HealthResponse(
         status="ok",
-        service=settings.app_name,
+        service=project_metadata.service_name,
+        version=project_metadata.version,
+        contract_version=project_metadata.contract_version,
     )
+
+
+@router.get("/version")
+def version():
+    """
+    Return service version metadata.
+    """
+    return project_metadata.model_dump()
 
 
 @router.get("/ready", response_model=ReadyResponse)
@@ -47,7 +57,9 @@ async def ready() -> ReadyResponse:
 
     return ReadyResponse(
         status=global_status,
-        service=settings.app_name,
+        service=project_metadata.service_name,
+        version=project_metadata.version,
+        contract_version=project_metadata.contract_version,
         core=statuses["core"],
         antispoof=statuses["antispoof"],
     )

@@ -1,6 +1,3 @@
-from app.types import ZkProofMetadata
-
-
 def build_zk_proof_metadata() -> dict:
     """
     Build ZK-ready metadata.

@@ -6,6 +6,43 @@ Global project direction is tracked in the central Age Decision repository.
 
 <hr>
 
+<h2>2.1.0</h2>
+
+- Added centralized project metadata through `project.json`.
+- Added `app/project.py` to load project metadata from a single source of truth.
+- Added `/version` endpoint exposing service metadata, version, contract version, repository and image.
+- Added `version` and `contract_version` fields to `/health`.
+- Added `version` and `contract_version` fields to `/ready`.
+- Updated FastAPI metadata to use `project.json` for application title and version.
+- Removed service name and API version from environment-driven runtime configuration.
+- Removed `APP_NAME` from example environment files.
+- Kept `app/version.py` as a backward-compatible metadata bridge.
+- Added compatibility metadata through `compatibility.json`.
+- Added machine-readable compatibility information for Core, AntiSpoof and JS SDK.
+- Added compatibility checks validating alignment between `project.json` and `compatibility.json`.
+- Added version contract tests for `/health`, `/ready`, `/version`, project metadata and compatibility metadata.
+- Added release metadata checks to ensure Git tags match `project.json`.
+- Added generated documentation blocks for health, readiness, version and compatibility examples.
+- Added README documentation generation through `scripts/update_readme_examples.py`.
+- Added usage documentation generation through `scripts/update_docs_usage.py`.
+- Added compatibility documentation generation through `scripts/update_docs_compatibility.py`.
+- Added project metadata validation through `scripts/check_project_metadata.py`.
+- Added compatibility metadata validation through `scripts/check_compatibility_metadata.py`.
+- Added release metadata validation through `scripts/check_release_metadata.py`.
+- Added `docs/compatibility.md` for contract stability, versioning and compatibility rules.
+- Added unified CI graph with quality, metadata, tests, contract compatibility and Docker runtime jobs.
+- Added quality checks with Ruff linting, Ruff formatting and Python compilation.
+- Added `requirements.dev.txt` for development and quality tooling.
+- Added EditorConfig-based whitespace normalization.
+- Added VS Code workspace settings for save-time formatting and whitespace cleanup and extension recommendations.
+- Added generated documentation synchronization checks in CI.
+- Added Docker runtime endpoint checks for `/health`, `/ready` and `/version`.
+- Updated `.dockerignore` and `.gitignore` to align Docker builds with metadata, documentation and model binary policy.
+- Updated README, usage, API contract and contributing documentation for v2.1.0 metadata and compatibility rules.
+- Reformatted Python source and tests with Ruff.
+
+<hr>
+
 <h2>2.0.0</h2>
 
 - Introduced privacy-first public verification contract.

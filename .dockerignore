@@ -1,10 +1,42 @@
+.git
+.github
+.vscode
+.idea
+
+__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+venv
+env
+
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+*.log
+*.sqlite3
+
+.env
+.env.*
+
+tests
+docker-compose.dev.yml
+Dockerfile.dev
+test-face.jpg
+
+dist
+build
+*.egg-info
+
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Env
+# Environment
 .env
 .env.*
 
@@ -20,29 +52,26 @@ tests/
 .pytest_cache/
 .cache/
 
-# Docs
-README.md
-ROADMAP.md
-
 # Local artifacts
 *.log
 *.sqlite3
 
 # Docker dev
 docker-compose.dev.yml
+docker-compose.override.yml
+Dockerfile.dev
 
 # IDE
 .vscode/
 .idea/
 
+# Docs
 *.md
 !README.md
 
-# Model binaries are not part of the API gateway
-models/
-**/models/
-*.onnx
-*.pt
-*.pth
-*.tflite
-*.bin
+# ML model binaries only
+models/*.onnx
+models/*.pt
+models/*.pth
+models/*.tflite
+models/*.bin
