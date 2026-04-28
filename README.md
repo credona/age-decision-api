@@ -81,7 +81,12 @@ Expected health response:
 
 <!-- BEGIN:HEALTH_RESPONSE -->
 ```json
-{}
+{
+  "status": "ok",
+  "service": "age-decision-api",
+  "version": "2.2.0",
+  "contract_version": "2.0"
+}
 ```
 <!-- END:HEALTH_RESPONSE -->
 
@@ -89,7 +94,14 @@ Expected version response:
 
 <!-- BEGIN:VERSION_RESPONSE -->
 ```json
-{}
+{
+  "service_name": "age-decision-api",
+  "app_name": "Age Decision API",
+  "version": "2.2.0",
+  "contract_version": "2.0",
+  "repository": "https://github.com/credona/age-decision-api",
+  "image": "ghcr.io/credona/age-decision-api"
+}
 ```
 <!-- END:VERSION_RESPONSE -->
 
@@ -148,7 +160,28 @@ Compatibility metadata is declared in `compatibility.json` and checked by CI.
 
 <!-- BEGIN:COMPATIBILITY_METADATA -->
 ```json
-{}
+{
+  "service": "age-decision-api",
+  "version": "2.2.0",
+  "contract_version": "2.0",
+  "compatible_with": {
+    "age-decision-core": ">=2.0.0 <3.0.0",
+    "age-decision-antispoof": ">=2.0.0 <3.0.0",
+    "age-decision-js": ">=2.0.0 <3.0.0"
+  },
+  "public_contract": {
+    "decision_values": [
+      "allow",
+      "deny"
+    ],
+    "score_field": "cred_global_score",
+    "estimated_age_exposed": false,
+    "raw_age_confidence_exposed": false,
+    "raw_liveness_confidence_exposed": false,
+    "downstream_raw_response_exposed_by_default": false,
+    "legacy_cred_score_exposed": false
+  }
+}
 ```
 <!-- END:COMPATIBILITY_METADATA -->
 
