@@ -9,44 +9,51 @@ permissions:
     contents: write
 
 jobs:
-    release:
-        name: Create GitHub release
+    verify-release:
+        name: Verify release metadata
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v6
+            - uses: actions/checkout@v6
 
-            - name: Set up Python
-              uses: actions/setup-python@v6
+            - uses: actions/setup-python@v6
               with:
-                  python-version: "3.11"
+                  python-version: "3.14"
 
             - name: Check release metadata
               run: python scripts/metadata/check_release_metadata.py
 
-            - name: Check project metadata
-              run: python scripts/metadata/check_project_metadata.py
+            - name: Sync compatibility metadata
+              run: |
+                  python scripts/metadata/sync_compatibility_metadata.py
+                  git diff --exit-code compatibility.json
 
-            - name: Check compatibility metadata
-              run: python scripts/metadata/check_compatibility_metadata.py
+            - name: Check metadata
+              run: |
+                  python scripts/metadata/check_project_metadata.py
+                  python scripts/metadata/check_compatibility_metadata.py
+                  python scripts/metadata/check_docker_metadata.py
 
-            - name: Check generated README examples
+            - name: Check generated documentation
               run: |
                   python scripts/docs/update_readme_examples.py
                   git diff --exit-code README.md
 
-            - name: Check generated usage examples
-              run: |
                   python scripts/docs/update_docs_usage.py
                   git diff --exit-code docs/usage.md
 
-            - name: Check generated compatibility documentation
-              run: |
                   python scripts/docs/update_docs_compatibility.py
                   git diff --exit-code docs/compatibility.md
 
-            - name: Create release with generated notes
+    release:
+        name: Create GitHub release
+        runs-on: ubuntu-latest
+        needs: [verify-release]
+
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Create release
               uses: softprops/action-gh-release@v3
               with:
                   generate_release_notes: true

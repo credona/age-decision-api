@@ -6,6 +6,25 @@ Global project direction is tracked in the central Age Decision repository.
 
 <hr>
 
+<h2>2.2.1</h2>
+
+<ul>
+  <li>Introduced single source of truth configuration via project.json.</li>
+  <li>Added dynamic environment generation for Docker (compose and runtime).</li>
+  <li>Removed static .env usage in favor of generated configuration.</li>
+  <li>Added Docker image metadata injection using build arguments.</li>
+  <li>Added Docker metadata consistency validation.</li>
+  <li>Added compatibility metadata auto-synchronization.</li>
+  <li>Added automatic documentation synchronization checks.</li>
+  <li>Added one-command auto-fix pipeline (fix_all_docker.sh).</li>
+  <li>Added one-command CI-equivalent validation (check_all_docker.sh).</li>
+  <li>Added Docker-first local CI execution.</li>
+  <li>Added pre-push validation hook aligned with CI.</li>
+  <li>Simplified API gateway developer workflow.</li>
+</ul>
+
+<hr>
+
 <h2>2.2.0</h2>
 
 <ul>
