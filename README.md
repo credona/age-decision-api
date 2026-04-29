@@ -10,7 +10,7 @@
 
 Age Decision API is the public gateway of the Age Decision ecosystem.
 
-It orchestrates threshold age decision and anti-spoofing services to produce a unified, privacy-first verification decision.
+It orchestrates downstream services and exposes a unified, privacy-first verification decision.
 
 It does not perform model inference locally.
 
@@ -30,15 +30,122 @@ It does not load, store, download, or redistribute machine learning model binari
 
 <hr>
 
+<h2>Quickstart for contributors</h2>
+
+Start the full development stack:
+
+~~~bash
+./scripts/docker/dev.sh
+~~~
+
+Check the gateway:
+
+~~~bash
+curl -i http://localhost:8002/health
+curl -i http://localhost:8002/version
+curl -i http://localhost:8002/ready
+~~~
+
+Expected health response:
+
+<!-- BEGIN:HEALTH_RESPONSE -->
+```json
+{
+  "status": "ok",
+  "service": "age-decision-api",
+  "version": "2.2.1",
+  "contract_version": "2.2"
+}
+```
+<!-- END:HEALTH_RESPONSE -->
+
+Expected version response:
+
+<!-- BEGIN:VERSION_RESPONSE -->
+```json
+{
+  "service_name": "age-decision-api",
+  "app_name": "Age Decision API",
+  "version": "2.2.1",
+  "contract_version": "2.2",
+  "repository": "https://github.com/credona/age-decision-api",
+  "image": "ghcr.io/credona/age-decision-api"
+}
+```
+<!-- END:VERSION_RESPONSE -->
+
+<hr>
+
+<h2>One-command workflow</h2>
+
+Auto-fix, regenerate metadata and documentation, then validate everything:
+
+~~~bash
+./scripts/ci/fix_all_docker.sh
+~~~
+
+Run strict validation only:
+
+~~~bash
+./scripts/ci/check_all_docker.sh
+~~~
+
+Start the development stack:
+
+~~~bash
+./scripts/docker/dev.sh
+~~~
+
+Build the API image with metadata from `project.json`:
+
+~~~bash
+./scripts/docker/build.sh prod
+./scripts/docker/build.sh dev
+~~~
+
+<hr>
+
+<h2>Configuration model</h2>
+
+Project metadata and default runtime values are declared once in:
+
+~~~text
+project.json
+~~~
+
+Generated environment files are created under:
+
+~~~text
+.generated/
+~~~
+
+Do not edit generated files manually.
+
+The repository does not use committed `.env` files.
+
+External users may still override runtime values with Docker environment variables.
+
+Example:
+
+~~~bash
+docker run --rm \
+  -p 8002:8000 \
+  -e AGE_DECISION_CORE_URL=http://age-decision-core:8000 \
+  -e AGE_DECISION_ANTISPOOF_URL=http://age-decision-antispoof:8001 \
+  ghcr.io/credona/age-decision-api:latest
+~~~
+
+<hr>
+
 <h2>Service role</h2>
 
-```text
+~~~text
 Client
-  → age-decision-api
-    → age-decision-core
-    → age-decision-antispoof
-  → unified verification response
-```
+  -> age-decision-api
+    -> age-decision-core
+    -> age-decision-antispoof
+  -> unified verification response
+~~~
 
 The API gateway is responsible for:
 
@@ -61,75 +168,11 @@ The API gateway is not responsible for:
 
 <hr>
 
-<h2>Quickstart</h2>
-
-```bash
-cp .env.example.dev .env
-docker compose -f docker-compose.dev.yml down -v
-docker compose -f docker-compose.dev.yml up -d --build
-```
-
-Check the service:
-
-```bash
-curl -i http://localhost:8002/health
-curl -i http://localhost:8002/version
-curl -i http://localhost:8002/ready
-```
-
-Expected health response:
-
-<!-- BEGIN:HEALTH_RESPONSE -->
-```json
-{
-  "status": "ok",
-  "service": "age-decision-api",
-  "version": "2.2.0",
-  "contract_version": "2.0"
-}
-```
-<!-- END:HEALTH_RESPONSE -->
-
-Expected version response:
-
-<!-- BEGIN:VERSION_RESPONSE -->
-```json
-{
-  "service_name": "age-decision-api",
-  "app_name": "Age Decision API",
-  "version": "2.2.0",
-  "contract_version": "2.0",
-  "repository": "https://github.com/credona/age-decision-api",
-  "image": "ghcr.io/credona/age-decision-api"
-}
-```
-<!-- END:VERSION_RESPONSE -->
-
-Run tests:
-
-```bash
-docker compose -f docker-compose.dev.yml exec age-decision-api pytest
-```
-
-<hr>
-
-<h2>Docker image</h2>
-
-```text
-ghcr.io/credona/age-decision-api
-```
-
-The API image contains only the gateway runtime.
-
-It should not contain ONNX, PyTorch, TensorFlow, or other model binaries.
-
-<hr>
-
 <h2>Public endpoint</h2>
 
-```text
+~~~text
 POST /verify
-```
+~~~
 
 The endpoint accepts a base64 image and returns:
 
@@ -156,14 +199,14 @@ The public response does not expose:
 
 <h2>Compatibility metadata</h2>
 
-Compatibility metadata is declared in `compatibility.json` and checked by CI.
+Compatibility metadata is declared in `compatibility.json` and synchronized from `project.json`.
 
 <!-- BEGIN:COMPATIBILITY_METADATA -->
 ```json
 {
   "service": "age-decision-api",
-  "version": "2.2.0",
-  "contract_version": "2.0",
+  "version": "2.2.1",
+  "contract_version": "2.2",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",
@@ -187,53 +230,15 @@ Compatibility metadata is declared in `compatibility.json` and checked by CI.
 
 <hr>
 
-<h2>Quality and compatibility checks</h2>
+<h2>Docker image</h2>
 
-Run tests:
+~~~text
+ghcr.io/credona/age-decision-api
+~~~
 
-```bash
-docker compose -f docker-compose.dev.yml exec age-decision-api pytest
-```
+The API image contains only the gateway runtime.
 
-Run contract tests:
-
-```bash
-docker compose -f docker-compose.dev.yml exec age-decision-api pytest tests/unit/contract
-```
-
-Run quality checks:
-
-```bash
-docker compose -f docker-compose.dev.yml exec age-decision-api ruff check .
-docker compose -f docker-compose.dev.yml exec age-decision-api ruff format --check .
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/check_project_metadata.py
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/check_compatibility_metadata.py
-```
-
-Update generated documentation blocks:
-
-```bash
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/update_readme_examples.py
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/update_docs_usage.py
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/update_docs_compatibility.py
-```
-
-<hr>
-
-<h2>Scope</h2>
-
-This service does not:
-
-- perform local age estimation
-- perform local anti-spoofing
-- perform identity verification
-- store images
-- store biometric templates
-- download model files
-- redistribute model files
-- generate real Zero-Knowledge proofs
-- replace certified legal identity checks
-- perform face recognition
+It should not contain ONNX, PyTorch, TensorFlow, or other model binaries.
 
 <hr>
 

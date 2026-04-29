@@ -17,11 +17,18 @@ services:
     container_name: age-decision-api
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: ${AGE_DECISION_API_DOCKERFILE}
+      args:
+        VERSION: ${AGE_DECISION_API_VERSION}
+        REPOSITORY: ${AGE_DECISION_API_REPOSITORY}
+        TITLE: ${AGE_DECISION_API_TITLE}
+        DESCRIPTION: ${AGE_DECISION_API_DESCRIPTION}
+        LICENSE: ${AGE_DECISION_API_LICENSE}
+    image: ${AGE_DECISION_API_IMAGE}:${AGE_DECISION_API_VERSION}
     ports:
-      - "${APP_PORT:-8002}:8000"
+      - "${APP_PORT}:8000"
     env_file:
-      - .env
+      - .generated/runtime/dev.env
     volumes:
       - ./:/app
     depends_on:

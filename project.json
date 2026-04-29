@@ -1,8 +1,41 @@
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.2.0",
-  "contract_version": "2.0",
+  "version": "2.2.1",
+  "contract_version": "2.2",
   "repository": "https://github.com/credona/age-decision-api",
-  "image": "ghcr.io/credona/age-decision-api"
+  "image": "ghcr.io/credona/age-decision-api",
+  "license": "Apache-2.0",
+  "docker": {
+    "dev": {
+      "dockerfile": "Dockerfile.dev",
+      "image": "age-decision-api-dev",
+      "title": "Age Decision API Dev",
+      "description": "Development image for the Age Decision API gateway."
+    },
+    "prod": {
+      "dockerfile": "Dockerfile",
+      "image": "age-decision-api",
+      "title": "Age Decision API",
+      "description": "Privacy-first public API gateway for the Age Decision ecosystem."
+    }
+  },
+  "runtime": {
+    "dev": {
+      "APP_PORT": "8002",
+      "AGE_DECISION_CORE_URL": "http://age-decision-core:8000",
+      "AGE_DECISION_ANTISPOOF_URL": "http://age-decision-antispoof:8001",
+      "REQUEST_TIMEOUT": "3000",
+      "LOG_LEVEL": "INFO",
+      "LOG_FORMAT": "json"
+    },
+    "prod": {
+      "APP_PORT": "8002",
+      "AGE_DECISION_CORE_URL": "http://age-decision-core:8000",
+      "AGE_DECISION_ANTISPOOF_URL": "http://age-decision-antispoof:8001",
+      "REQUEST_TIMEOUT": "3000",
+      "LOG_LEVEL": "INFO",
+      "LOG_FORMAT": "json"
+    }
+  }
 }

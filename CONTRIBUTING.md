@@ -4,61 +4,101 @@ This repository contains the public API gateway.
 
 For global contribution rules, see:
 
-```text
+~~~text
 https://github.com/credona/age-decision/blob/main/CONTRIBUTING.md
-```
+~~~
 
 <hr>
 
 <h2>Local setup</h2>
 
-```bash
-cp .env.example.dev .env
-docker compose -f docker-compose.dev.yml down -v
-docker compose -f docker-compose.dev.yml up -d --build
-```
+Start the full development stack:
+
+~~~bash
+./scripts/docker/dev.sh
+~~~
+
+The stack starts:
+
+- `age-decision-core`
+- `age-decision-antispoof`
+- `age-decision-api`
 
 <hr>
 
-<h2>Run tests</h2>
+<h2>Developer workflow</h2>
 
-```bash
-docker compose -f docker-compose.dev.yml exec age-decision-api pytest
-```
+Auto-fix, regenerate generated files, run tests, then run the final check:
+
+~~~bash
+./scripts/ci/fix_all_docker.sh
+~~~
+
+Run validation only:
+
+~~~bash
+./scripts/ci/check_all_docker.sh
+~~~
+
+Prepare a release locally:
+
+~~~bash
+docker compose --env-file .generated/compose/dev.env -f docker-compose.dev.yml exec age-decision-api scripts/ci/release_prepare.sh
+~~~
 
 <hr>
 
-<h2>Run quality checks</h2>
+<h2>Configuration policy</h2>
 
-```bash
-docker compose -f docker-compose.dev.yml exec age-decision-api ruff check .
-docker compose -f docker-compose.dev.yml exec age-decision-api ruff format --check .
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/check_project_metadata.py
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/check_compatibility_metadata.py
-```
+Project metadata and default runtime values are edited in:
+
+~~~text
+project.json
+~~~
+
+Generated files are written under:
+
+~~~text
+.generated/
+~~~
+
+Do not edit generated files manually.
+
+Do not commit `.env` files.
+
+Do not duplicate the service name, application name, version, contract version, Docker image metadata, or default runtime values in environment files.
+
+Compatibility metadata is synchronized from `project.json`.
+
+Release tags must match the version declared in `project.json`.
+
+Example:
+
+~~~text
+project.json version: 2.2.1
+Git tag: v2.2.1
+~~~
 
 <hr>
 
-<h2>Update generated documentation</h2>
+<h2>Generated documentation</h2>
 
 Some documentation blocks are generated from `project.json` and `compatibility.json`.
 
-Run:
-
-```bash
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/update_readme_examples.py
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/update_docs_usage.py
-docker compose -f docker-compose.dev.yml exec age-decision-api python scripts/update_docs_compatibility.py
-```
-
 Generated blocks are delimited by comments such as:
 
-```text
+~~~text
 <!-- BEGIN:HEALTH_RESPONSE -->
 <!-- END:HEALTH_RESPONSE -->
-```
+~~~
 
 Do not edit generated blocks manually.
+
+Use:
+
+~~~bash
+./scripts/ci/fix_all_docker.sh
+~~~
 
 <hr>
 
@@ -74,6 +114,8 @@ Good API contributions include:
 - OpenAPI contract tests
 - integration tests with real services
 - documentation updates
+- developer workflow improvements
+- release automation improvements
 
 <hr>
 
@@ -87,33 +129,7 @@ Do not commit:
 - local secrets
 - generated cache folders
 - production environment files
-
-<hr>
-
-<h2>Project metadata policy</h2>
-
-Project identity metadata must be edited in:
-
-```text
-project.json
-```
-
-Compatibility metadata must be edited in:
-
-```text
-compatibility.json
-```
-
-Do not duplicate the service name, application name, version or contract version in environment files.
-
-Release tags must match the version declared in `project.json`.
-
-Example:
-
-```text
-project.json version: 2.1.0
-Git tag: v2.1.0
-```
+- generated `.env` files
 
 <hr>
 

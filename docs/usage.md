@@ -2,51 +2,27 @@
 
 This document describes how to run and call the public Age Decision API gateway.
 
-For global concepts, architecture and roadmap, see:
-
-```text
-https://github.com/credona/age-decision
-```
-
 <hr>
 
-<h2>Environment</h2>
+<h2>Contributor usage</h2>
 
-Create a local environment file:
+Start the full development stack:
 
-```bash
-cp .env.example.dev .env
-```
+~~~bash
+./scripts/docker/dev.sh
+~~~
 
-Example:
+Stop the stack:
 
-```env
-APP_ENV=development
-APP_PORT=8002
+~~~bash
+docker compose --env-file .generated/compose/dev.env -f docker-compose.dev.yml down
+~~~
 
-AGE_DECISION_CORE_URL=http://age-decision-core:8000
-AGE_DECISION_ANTISPOOF_URL=http://age-decision-antispoof:8001
+View API logs:
 
-REQUEST_TIMEOUT=3000
-LOG_LEVEL=info
-
-EXPOSE_RAW_DOWNSTREAM_RESPONSES=false
-```
-
-Project identity metadata is stored in:
-
-```text
-project.json
-```
-
-Runtime environment files must not override:
-
-```text
-service_name
-app_name
-version
-contract_version
-```
+~~~bash
+docker compose --env-file .generated/compose/dev.env -f docker-compose.dev.yml logs -f age-decision-api
+~~~
 
 <hr>
 
@@ -54,99 +30,94 @@ contract_version
 
 The API gateway depends on downstream services:
 
-```text
+~~~text
 age-decision-core
 age-decision-antispoof
-```
+~~~
 
 It does not run local model inference.
 
 It does not download or load model files.
 
-Model lifecycle is owned by the downstream services.
+Model lifecycle is owned by downstream services.
 
 <hr>
 
-<h2>Run local stack</h2>
+<h2>Runtime configuration</h2>
 
-```bash
-docker compose -f docker-compose.dev.yml down -v
-docker compose -f docker-compose.dev.yml up -d --build
-```
+Default runtime values are declared in:
 
-View logs:
+~~~text
+project.json
+~~~
 
-```bash
-docker compose -f docker-compose.dev.yml logs -f age-decision-api
-```
+Generated runtime files are written to:
 
-Stop services:
+~~~text
+.generated/runtime/
+~~~
 
-```bash
-docker compose -f docker-compose.dev.yml down -v
-```
+Generated Compose files are written to:
+
+~~~text
+.generated/compose/
+~~~
+
+Do not edit generated files manually.
+
+Regenerate them with:
+
+~~~bash
+./scripts/config/generate_env.sh dev
+~~~
 
 <hr>
 
-<h2>Health</h2>
+<h2>Health checks</h2>
 
-```bash
+~~~bash
 curl -i http://localhost:8002/health
-```
+curl -i http://localhost:8002/version
+curl -i http://localhost:8002/ready
+~~~
 
-Example response:
+Expected health response:
 
 <!-- BEGIN:HEALTH_RESPONSE -->
 ```json
 {
   "status": "ok",
   "service": "age-decision-api",
-  "version": "2.2.0",
-  "contract_version": "2.0"
+  "version": "2.2.1",
+  "contract_version": "2.2"
 }
 ```
 <!-- END:HEALTH_RESPONSE -->
 
-<hr>
-
-<h2>Version</h2>
-
-```bash
-curl -i http://localhost:8002/version
-```
-
-Example response:
+Expected version response:
 
 <!-- BEGIN:VERSION_RESPONSE -->
 ```json
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.2.0",
-  "contract_version": "2.0",
+  "version": "2.2.1",
+  "contract_version": "2.2",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api"
 }
 ```
 <!-- END:VERSION_RESPONSE -->
 
-<hr>
-
-<h2>Readiness</h2>
-
-```bash
-curl -i http://localhost:8002/ready
-```
-
-Example response:
+Expected readiness response:
 
 <!-- BEGIN:READY_RESPONSE -->
 ```json
 {
   "status": "ready",
   "service": "age-decision-api",
-  "version": "2.2.0",
-  "contract_version": "2.0",
+  "version": "2.2.1",
+  "contract_version": "2.2",
   "core": {
     "status": "ready",
     "url": "http://age-decision-core:8000"
@@ -163,7 +134,7 @@ Example response:
 
 <h2>Verify</h2>
 
-```bash
+~~~bash
 IMAGE_BASE64=$(base64 -w 0 test-face.jpg)
 
 curl -X POST http://localhost:8002/verify \
@@ -171,11 +142,11 @@ curl -X POST http://localhost:8002/verify \
   -H "X-Request-ID: test-request-001" \
   -H "X-Correlation-ID: test-correlation-001" \
   -d "{\"image_base64\":\"$IMAGE_BASE64\",\"majority_country\":\"FR\",\"age_threshold\":18}"
-```
+~~~
 
 Example response:
 
-```json
+~~~json
 {
   "request_id": "test-request-001",
   "correlation_id": "test-correlation-001",
@@ -216,7 +187,21 @@ Example response:
   },
   "reason": null
 }
-```
+~~~
+
+<hr>
+
+<h2>External Docker usage</h2>
+
+Run from the published image:
+
+~~~bash
+docker run --rm \
+  -p 8002:8000 \
+  -e AGE_DECISION_CORE_URL=http://age-decision-core:8000 \
+  -e AGE_DECISION_ANTISPOOF_URL=http://age-decision-antispoof:8001 \
+  ghcr.io/credona/age-decision-api:latest
+~~~
 
 <hr>
 
@@ -240,7 +225,7 @@ Error responses follow a stable JSON format.
 
 The API does not expose internal exception details.
 
-```json
+~~~json
 {
   "request_id": "test-request-001",
   "correlation_id": "test-correlation-001",
@@ -249,14 +234,14 @@ The API does not expose internal exception details.
     "message": "Invalid request."
   }
 }
-```
+~~~
 
 Known error codes:
 
-```text
+~~~text
 invalid_base64_image
 downstream_service_error
-```
+~~~
 
 The `message` field is intentionally generic and stable.
 
@@ -264,22 +249,30 @@ Detailed error context is available only in server logs.
 
 <hr>
 
+<h2>Validation</h2>
+
+Run the full auto-fix and validation pipeline:
+
+~~~bash
+./scripts/ci/fix_all_docker.sh
+~~~
+
+Run validation only:
+
+~~~bash
+./scripts/ci/check_all_docker.sh
+~~~
+
+<hr>
+
 <h2>Compatibility metadata</h2>
-
-Compatibility metadata is declared in:
-
-```text
-compatibility.json
-```
-
-Generated view:
 
 <!-- BEGIN:COMPATIBILITY_METADATA -->
 ```json
 {
   "service": "age-decision-api",
-  "version": "2.2.0",
-  "contract_version": "2.0",
+  "version": "2.2.1",
+  "contract_version": "2.2",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",
@@ -300,11 +293,3 @@ Generated view:
 }
 ```
 <!-- END:COMPATIBILITY_METADATA -->
-
-<hr>
-
-<h2>Tests</h2>
-
-```bash
-docker compose -f docker-compose.dev.yml exec age-decision-api pytest
-```
