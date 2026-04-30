@@ -2,11 +2,8 @@
 
 This repository contains the public API gateway.
 
-For global contribution rules, see:
-
-~~~text
+Global contributing policy:
 https://github.com/credona/age-decision/blob/main/CONTRIBUTING.md
-~~~
 
 <hr>
 
