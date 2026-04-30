@@ -2,6 +2,9 @@
 
 This document describes the public response contract exposed by the API gateway.
 
+For ecosystem-wide compatibility policy, see:
+https://github.com/credona/age-decision/blob/main/COMPATIBILITY.md
+
 <hr>
 
 <h2>Request</h2>
@@ -245,26 +248,6 @@ Generated view:
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api"
 }
-```
-<!-- END:VERSION_RESPONSE -->
-
-<hr>
-
-<hr>
-
-<h2>Project metadata</h2>
-
-Project metadata is stored in:
-
-```text
-project.json
-```
-
-Generated view:
-
-<!-- BEGIN:VERSION_RESPONSE -->
-```json
-{}
 ```
 <!-- END:VERSION_RESPONSE -->
 
