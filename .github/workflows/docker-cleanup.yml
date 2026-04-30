@@ -29,4 +29,3 @@ jobs:
                   package-name: age-decision-api
                   package-type: container
                   delete-only-untagged-versions: "true"
-                  num-old-versions-to-delete: 100
