@@ -29,6 +29,7 @@ Dockerfile.dev
 # IDE
 .vscode/
 .idea/
+.cursor/
 
 # Docs
 *.md
