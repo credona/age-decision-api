@@ -33,3 +33,29 @@ def test_openapi_verify_response_contains_v2_global_score_fields():
     assert "cred_score" not in properties
     assert "age_check" in properties
     assert "liveness_check" in properties
+
+
+def test_openapi_error_response_schema_exposes_only_standardized_fields():
+    response = client.get("/openapi.json")
+
+    assert response.status_code == 200
+
+    payload = response.json()
+
+    schema = payload["components"]["schemas"]["ErrorResponse"]
+    properties = schema["properties"]
+
+    assert set(properties.keys()) == {"request_id", "correlation_id", "error"}
+
+
+def test_openapi_error_detail_schema_exposes_only_standardized_fields():
+    response = client.get("/openapi.json")
+
+    assert response.status_code == 200
+
+    payload = response.json()
+
+    schema = payload["components"]["schemas"]["ErrorDetail"]
+    properties = schema["properties"]
+
+    assert set(properties.keys()) == {"code", "message"}

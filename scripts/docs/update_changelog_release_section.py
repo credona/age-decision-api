@@ -1,55 +1,50 @@
-"""Deterministically maintain the v2.2.3 release section in CHANGELOG.md."""
+"""Deterministically maintain the v2.3.0 release section in CHANGELOG.md."""
 
 from __future__ import annotations
 
-import re
+import sys
 from pathlib import Path
 
-CHANGELOG_PATH = Path("CHANGELOG.md")
-ANCHOR = (
-    "Global project direction is tracked in the central Age Decision repository.\n\n"
+_DOCS_SCRIPTS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(_DOCS_SCRIPTS_DIR))
+
+from changelog_utils import (  # noqa: E402
+    build_changelog_block,
+    read_text,
+    replace_or_prepend_version_section,
+    write_text,
 )
-MANAGED_VERSION = "2.2.3"
+
+CHANGELOG_PATH = Path("CHANGELOG.md")
+MANAGED_VERSION = "2.3.0"
 
 CHANGELOG_SECTION_ITEMS: tuple[str, ...] = (
-    "Enforced documentation boundaries between global and repository-specific docs.",
-    "Removed cross-repository documentation duplication.",
-    "Normalized repository <code>README.md</code> scope.",
-    "Normalized <code>CONTRIBUTING.md</code> to local workflows.",
-    "Normalized <code>SECURITY.md</code> and <code>COMPATIBILITY.md</code> scope.",
-    "Enforced absolute GitHub links only for cross-repository documentation references.",
-    "Centralized global documentation in <code>age-decision</code>.",
+    "Added stable public status contract regression coverage for "
+    "<code>/health</code> and <code>/ready</code>.",
+    "Standardized the public error response model to expose only "
+    "<code>request_id</code>, <code>correlation_id</code>, and <code>error</code>.",
+    "Normalized structured JSON validation failures on "
+    "<code>POST /verify</code> to the same ErrorResponse envelope.",
+    "Mapped missing <code>image_base64</code> validations to "
+    "<code>missing_image_base64</code> with HTTP 400 and <code>Invalid request.</code>.",
+    "Preserved downstream failure normalization (<code>downstream_service_error</code>) "
+    "with stable messaging.",
+    "Preserved privacy-first forbidden field guarantees for public gateway outputs.",
+    "Documented public gateway deprecation rules in <code>docs/deprecation-policy.md</code>.",
+    "Documented the gateway error model and known codes in <code>docs/error-model.md</code>.",
+    "Documented stable status endpoints and <code>contract_version</code> behavior in "
+    "<code>docs/status-contract.md</code>.",
 )
-
-
-def build_block() -> str:
-    lines = [
-        f"<h2>{MANAGED_VERSION}</h2>",
-        "",
-        "<ul>",
-    ]
-    for item in CHANGELOG_SECTION_ITEMS:
-        lines.append(f"  <li>{item}</li>")
-    lines.extend(["</ul>", "", "<hr>", "", ""])
-    return "\n".join(lines)
 
 
 def main() -> None:
-    heading = f"<h2>{MANAGED_VERSION}</h2>"
-    new_block = build_block()
-    text = CHANGELOG_PATH.read_text(encoding="utf-8")
-    pattern = re.compile(
-        re.escape(heading) + r"\s*\n\s*<ul>.*?</ul>\s*\n\s*<hr>\s*\n*",
-        re.DOTALL,
-    )
-    if pattern.search(text):
-        updated = pattern.sub(new_block, text, count=1)
-    elif ANCHOR in text:
-        updated = text.replace(ANCHOR, ANCHOR + new_block, 1)
-    else:
-        raise SystemExit("CHANGELOG.md missing expected anchor paragraph")
-
-    CHANGELOG_PATH.write_text(updated, encoding="utf-8")
+    block = build_changelog_block(MANAGED_VERSION, CHANGELOG_SECTION_ITEMS)
+    text = read_text(CHANGELOG_PATH)
+    try:
+        updated = replace_or_prepend_version_section(text, MANAGED_VERSION, block)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+    write_text(CHANGELOG_PATH, updated)
 
 
 if __name__ == "__main__":

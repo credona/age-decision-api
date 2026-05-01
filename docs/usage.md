@@ -88,8 +88,8 @@ Expected health response:
 {
   "status": "ok",
   "service": "age-decision-api",
-  "version": "2.2.3",
-  "contract_version": "2.2"
+  "version": "2.3.0",
+  "contract_version": "2.3"
 }
 ```
 <!-- END:HEALTH_RESPONSE -->
@@ -101,8 +101,8 @@ Expected version response:
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.2.3",
-  "contract_version": "2.2",
+  "version": "2.3.0",
+  "contract_version": "2.3",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api"
 }
@@ -116,8 +116,8 @@ Expected readiness response:
 {
   "status": "ready",
   "service": "age-decision-api",
-  "version": "2.2.3",
-  "contract_version": "2.2",
+  "version": "2.3.0",
+  "contract_version": "2.3",
   "core": {
     "status": "ready",
     "url": "http://age-decision-core:8000"
@@ -223,6 +223,8 @@ The public `/verify` response does not expose:
 
 Error responses follow a stable JSON format.
 
+Structured JSON request bodies that fail <code>/verify</code> field validation (after JSON decode) map to HTTP 400 with the same envelope. Malformed bodies or unreadable payloads may still return FastAPI validation detail with HTTP 422.
+
 The API does not expose internal exception details.
 
 ~~~json
@@ -239,7 +241,9 @@ The API does not expose internal exception details.
 Known error codes:
 
 ~~~text
+missing_image_base64
 invalid_base64_image
+invalid_request
 downstream_service_error
 ~~~
 
@@ -271,8 +275,8 @@ Run validation only:
 ```json
 {
   "service": "age-decision-api",
-  "version": "2.2.3",
-  "contract_version": "2.2",
+  "version": "2.3.0",
+  "contract_version": "2.3",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",
