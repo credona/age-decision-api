@@ -44,6 +44,9 @@ Version 2.3.0 documents public gateway contract governance: stable <code>/health
 
 - Repository: https://github.com/credona/age-decision-api
 - Usage: docs/usage.md
+- Deprecation policy: docs/deprecation-policy.md
+- Error model: docs/error-model.md
+- Status contract: docs/status-contract.md
 - API contract: docs/api-contract.md
 - Compatibility: docs/compatibility.md
 - Security: SECURITY.md

@@ -30,6 +30,10 @@ CHANGELOG_SECTION_ITEMS: tuple[str, ...] = (
     "Preserved downstream failure normalization (<code>downstream_service_error</code>) "
     "with stable messaging.",
     "Preserved privacy-first forbidden field guarantees for public gateway outputs.",
+    "Documented public gateway deprecation rules in <code>docs/deprecation-policy.md</code>.",
+    "Documented the gateway error model and known codes in <code>docs/error-model.md</code>.",
+    "Documented stable status endpoints and <code>contract_version</code> behavior in "
+    "<code>docs/status-contract.md</code>.",
 )
 
 

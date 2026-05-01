@@ -13,6 +13,9 @@ Global project direction is tracked in the central Age Decision repository.
   <li>Mapped missing <code>image_base64</code> validations to <code>missing_image_base64</code> with HTTP 400 and <code>Invalid request.</code>.</li>
   <li>Preserved downstream failure normalization (<code>downstream_service_error</code>) with stable messaging.</li>
   <li>Preserved privacy-first forbidden field guarantees for public gateway outputs.</li>
+  <li>Documented public gateway deprecation rules in <code>docs/deprecation-policy.md</code>.</li>
+  <li>Documented the gateway error model and known codes in <code>docs/error-model.md</code>.</li>
+  <li>Documented stable status endpoints and <code>contract_version</code> behavior in <code>docs/status-contract.md</code>.</li>
 </ul>
 
 <hr>
