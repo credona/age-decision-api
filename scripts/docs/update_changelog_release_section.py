@@ -1,4 +1,4 @@
-"""Deterministically maintain the v2.2.3 release section in CHANGELOG.md."""
+"""Deterministically maintain the v2.3.0 release section in CHANGELOG.md."""
 
 from __future__ import annotations
 
@@ -9,16 +9,20 @@ CHANGELOG_PATH = Path("CHANGELOG.md")
 ANCHOR = (
     "Global project direction is tracked in the central Age Decision repository.\n\n"
 )
-MANAGED_VERSION = "2.2.3"
+MANAGED_VERSION = "2.3.0"
 
 CHANGELOG_SECTION_ITEMS: tuple[str, ...] = (
-    "Enforced documentation boundaries between global and repository-specific docs.",
-    "Removed cross-repository documentation duplication.",
-    "Normalized repository <code>README.md</code> scope.",
-    "Normalized <code>CONTRIBUTING.md</code> to local workflows.",
-    "Normalized <code>SECURITY.md</code> and <code>COMPATIBILITY.md</code> scope.",
-    "Enforced absolute GitHub links only for cross-repository documentation references.",
-    "Centralized global documentation in <code>age-decision</code>.",
+    "Added stable public status contract regression coverage for "
+    "<code>/health</code> and <code>/ready</code>.",
+    "Standardized the public error response model to expose only "
+    "<code>request_id</code>, <code>correlation_id</code>, and <code>error</code>.",
+    "Normalized structured JSON validation failures on "
+    "<code>POST /verify</code> to the same ErrorResponse envelope.",
+    "Mapped missing <code>image_base64</code> validations to "
+    "<code>missing_image_base64</code> with HTTP 400 and <code>Invalid request.</code>.",
+    "Preserved downstream failure normalization (<code>downstream_service_error</code>) "
+    "with stable messaging.",
+    "Preserved privacy-first forbidden field guarantees for public gateway outputs.",
 )
 
 

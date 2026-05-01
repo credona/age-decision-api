@@ -194,6 +194,21 @@ cred_antispoof_score
 }
 ```
 
+Malformed JSON payloads (or missing JSON altogether) continue to produce FastAPI default validation responses (HTTP <code>422</code>). Once JSON decodes, field-level violations on <code>/verify</code> normalize to HTTP <code>400</code> with <code>ErrorResponse</code> (for example <code>missing_image_base64</code> or generic <code>invalid_request</code> with message <code>Invalid request.</code>).
+
+Upstream orchestration failures return HTTP <code>502</code> with:
+
+```json
+{
+  "request_id": "test-request-001",
+  "correlation_id": "test-correlation-001",
+  "error": {
+    "code": "downstream_service_error",
+    "message": "An upstream service error has occurred."
+  }
+}
+```
+
 The API does not expose internal exception details.
 
 <hr>

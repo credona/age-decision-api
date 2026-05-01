@@ -22,6 +22,8 @@ It does not perform model inference locally.
 
 It does not load, store, download, or redistribute machine learning model binaries.
 
+Version 2.3.0 documents public gateway contract governance: stable <code>/health</code> and <code>/ready</code> regression coverage, standardized error envelopes, normalized <code>/verify</code> JSON validation (including <code>missing_image_base64</code>), preserved downstream failure normalization, and unchanged privacy-first field rules.
+
 <hr>
 
 <h2>When to use this repository</h2>

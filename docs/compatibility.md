@@ -199,6 +199,13 @@ cred_antispoof_score
 
 The API does not expose internal exception details.
 
+Version 2.3.0 contract governance additionally asserts:
+
+- stable status contracts on <code>GET /health</code> and <code>GET /ready</code>
+- standardized public <code>ErrorResponse</code> for normalized <code>POST /verify</code> validation and domain rejections (<code>invalid_base64_image</code>, <code>missing_image_base64</code>, <code>invalid_request</code>)
+- downstream orchestration failures continue to normalize as <code>downstream_service_error</code> (HTTP 502) with stable messaging
+- forbidden public leakage rules remain unchanged (<code>estimated_age</code>, raw confidences and scores, downstream raw payloads, legacy <code>cred_score</code>, stack traces)
+
 <hr>
 
 <h2>Privacy contract</h2>
@@ -243,8 +250,8 @@ Generated view:
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.2.3",
-  "contract_version": "2.2",
+  "version": "2.3.0",
+  "contract_version": "2.3",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api"
 }
@@ -267,8 +274,8 @@ Generated view:
 ```json
 {
   "service": "age-decision-api",
-  "version": "2.2.3",
-  "contract_version": "2.2",
+  "version": "2.3.0",
+  "contract_version": "2.3",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",
