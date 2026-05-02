@@ -3,7 +3,7 @@ from httpx import Response
 from httpx._transports.base import AsyncBaseTransport
 from httpx import AsyncClient, Request
 
-from app.clients.core_client import CoreClient
+from app.infrastructure.clients.core_client import CoreClient
 
 
 class MockTransport(AsyncBaseTransport):

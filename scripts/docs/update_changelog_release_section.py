@@ -1,14 +1,14 @@
-"""Deterministically maintain the v2.3.0 release section in CHANGELOG.md."""
+"""Deterministically maintain the v2.4.0 release section in CHANGELOG.md."""
 
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 
-_DOCS_SCRIPTS_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(_DOCS_SCRIPTS_DIR))
+_SCRIPTS_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from changelog_utils import (  # noqa: E402
+from lib.changelog import (  # noqa: E402
     build_changelog_block,
     read_text,
     replace_or_prepend_version_section,
@@ -16,24 +16,13 @@ from changelog_utils import (  # noqa: E402
 )
 
 CHANGELOG_PATH = Path("CHANGELOG.md")
-MANAGED_VERSION = "2.3.0"
+MANAGED_VERSION = "2.4.0"
 
 CHANGELOG_SECTION_ITEMS: tuple[str, ...] = (
-    "Added stable public status contract regression coverage for "
-    "<code>/health</code> and <code>/ready</code>.",
-    "Standardized the public error response model to expose only "
-    "<code>request_id</code>, <code>correlation_id</code>, and <code>error</code>.",
-    "Normalized structured JSON validation failures on "
-    "<code>POST /verify</code> to the same ErrorResponse envelope.",
-    "Mapped missing <code>image_base64</code> validations to "
-    "<code>missing_image_base64</code> with HTTP 400 and <code>Invalid request.</code>.",
-    "Preserved downstream failure normalization (<code>downstream_service_error</code>) "
-    "with stable messaging.",
-    "Preserved privacy-first forbidden field guarantees for public gateway outputs.",
-    "Documented public gateway deprecation rules in <code>docs/deprecation-policy.md</code>.",
-    "Documented the gateway error model and known codes in <code>docs/error-model.md</code>.",
-    "Documented stable status endpoints and <code>contract_version</code> behavior in "
-    "<code>docs/status-contract.md</code>.",
+    "Introduced orchestration architecture preparation for the API gateway.",
+    "Prepared strict API, application, domain, and infrastructure boundaries.",
+    "Kept public contract responses stable during internal structural changes.",
+    "Preserved privacy-first response guarantees and forbidden field checks.",
 )
 
 

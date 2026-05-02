@@ -5,6 +5,9 @@ from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from app.api.response_filter import filter_verify_response
+from app.application.dto.verify_command import VerifyCommand
+from app.application.use_cases.verify_identity import VerifyIdentityUseCase
 from app.models.schemas import (
     ErrorResponse,
     HealthResponse,
@@ -13,9 +16,11 @@ from app.models.schemas import (
     VerifyResponse,
 )
 from app.project import project_metadata
-from app.services.decision_service import decision_service
+from app.application.use_cases.verification_orchestrator import decision_service
 
 router = APIRouter()
+
+verify_identity_use_case = VerifyIdentityUseCase(decision_service)
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -97,14 +102,16 @@ async def verify(
     )
 
     try:
-        result = await decision_service.verify_image_base64(
-            image_base64=payload.image_base64,
-            request_id=request_id,
-            correlation_id=correlation_id,
-            majority_country=payload.majority_country,
-            age_threshold=payload.age_threshold,
+        result = await verify_identity_use_case.execute(
+            VerifyCommand(
+                image_base64=payload.image_base64,
+                request_id=request_id,
+                correlation_id=correlation_id,
+                majority_country=payload.majority_country,
+                age_threshold=payload.age_threshold,
+            )
         )
-        return VerifyResponse(**result)
+        return filter_verify_response(result)
 
     except ValueError:
         decision_service.log_event(

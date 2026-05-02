@@ -1,4 +1,4 @@
-from app.normalizers.age_normalizer import normalize_age_check
+from app.domain.normalizers.age_normalizer import normalize_age_check
 
 
 def test_age_normalizer_pass():

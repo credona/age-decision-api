@@ -4,14 +4,16 @@ from uuid import uuid4
 
 import httpx
 
-from app.clients.antispoof_client import antispoof_client
-from app.clients.core_client import core_client
-from app.config.settings import settings
-from app.normalizers.age_normalizer import normalize_age_check
-from app.normalizers.liveness_normalizer import normalize_liveness_check
-from app.privacy import build_privacy_metadata
-from app.types import AgeCheck, LivenessCheck, PublicDecision, VerifyResult
-from app.zk import build_zk_proof_metadata
+from app.infrastructure.clients.antispoof_client import antispoof_client
+from app.infrastructure.clients.core_client import core_client
+from app.infrastructure.config.settings import settings
+from app.application.ports.antispoof_client import AntispoofClientPort
+from app.application.ports.core_client import CoreClientPort
+from app.domain.normalizers.age_normalizer import normalize_age_check
+from app.domain.normalizers.liveness_normalizer import normalize_liveness_check
+from app.domain.privacy.metadata import build_privacy_metadata
+from app.domain.types import AgeCheck, LivenessCheck, PublicDecision, VerifyResult
+from app.domain.proof.metadata import build_zk_proof_metadata
 
 logger = logging.getLogger("age_decision_api")
 
@@ -28,6 +30,14 @@ class DecisionService:
     - global Credona score computation
     - privacy and ZK-ready metadata
     """
+
+    def __init__(
+        self,
+        core: CoreClientPort | None = None,
+        antispoof: AntispoofClientPort | None = None,
+    ):
+        self.core_client = core
+        self.antispoof_client = antispoof
 
     async def check_service_health(self, service_url: str) -> dict[str, str]:
         """Check whether a downstream service is reachable."""
@@ -102,7 +112,10 @@ class DecisionService:
             },
         )
 
-        raw_age = await core_client.estimate_image(
+        if self.core_client is None or self.antispoof_client is None:
+            raise RuntimeError("downstream_clients_not_configured")
+
+        raw_age = await self.core_client.estimate_image(
             file_content=file_content,
             filename="image.jpg",
             content_type="image/jpeg",
@@ -110,7 +123,7 @@ class DecisionService:
             params=core_params,
         )
 
-        raw_liveness = await antispoof_client.check_image(
+        raw_liveness = await self.antispoof_client.check_image(
             file_content=file_content,
             filename="image.jpg",
             content_type="image/jpeg",
@@ -263,4 +276,7 @@ class DecisionService:
         )
 
 
-decision_service = DecisionService()
+decision_service = DecisionService(
+    core=core_client,
+    antispoof=antispoof_client,
+)

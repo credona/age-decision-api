@@ -1,5 +1,5 @@
-from app.config.settings import settings
-from app.types import PrivacyMetadata
+from app.infrastructure.config.settings import settings
+from app.domain.types import PrivacyMetadata
 
 
 def build_privacy_metadata() -> PrivacyMetadata:

@@ -1,6 +1,6 @@
 from typing import Any
 
-from app.types import AgeCheck
+from app.domain.types import AgeCheck
 
 
 def _extract_score(value: Any) -> float | None:

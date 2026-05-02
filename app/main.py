@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 
 from app.api.routes import handle_request_validation_error, router
-from app.config.settings import settings
-from app.logging_config import configure_logging
+from app.infrastructure.config.settings import settings
+from app.infrastructure.logging.logging_config import configure_logging
 from app.project import project_metadata
 
 configure_logging(settings.log_level)

@@ -1,4 +1,4 @@
-from app.normalizers.liveness_normalizer import normalize_liveness_check
+from app.domain.normalizers.liveness_normalizer import normalize_liveness_check
 
 
 def test_liveness_normalizer_pass():

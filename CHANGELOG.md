@@ -4,6 +4,17 @@ This changelog tracks changes specific to Age Decision API.
 
 Global project direction is tracked in the central Age Decision repository.
 
+<h2>2.4.0</h2>
+
+<ul>
+  <li>Introduced orchestration architecture preparation for the API gateway.</li>
+  <li>Prepared strict API, application, domain, and infrastructure boundaries.</li>
+  <li>Kept public contract responses stable during internal structural changes.</li>
+  <li>Preserved privacy-first response guarantees and forbidden field checks.</li>
+</ul>
+
+<hr>
+
 <h2>2.3.0</h2>
 
 <ul>

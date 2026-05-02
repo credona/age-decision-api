@@ -1,6 +1,6 @@
 import httpx
 
-from app.config.settings import settings
+from app.infrastructure.config.settings import settings
 
 
 class CoreClient:

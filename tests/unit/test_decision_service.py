@@ -2,7 +2,7 @@ import base64
 
 import pytest
 
-from app.services.decision_service import DecisionService
+from app.application.use_cases.verification_orchestrator import DecisionService
 
 
 @pytest.mark.asyncio

@@ -1,6 +1,6 @@
 from typing import Any
 
-from app.types import LivenessCheck
+from app.domain.types import LivenessCheck
 
 
 def _extract_score(value: Any) -> float | None:

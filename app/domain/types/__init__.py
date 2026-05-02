@@ -3,7 +3,6 @@ from .decisions import (
     LivenessCheck,
     PrivacyMetadata,
     PublicDecision,
-    ThresholdPolicy,
     VerifyResult,
     ZkProofMetadata,
 )
@@ -13,7 +12,6 @@ __all__ = [
     "LivenessCheck",
     "PrivacyMetadata",
     "PublicDecision",
-    "ThresholdPolicy",
     "VerifyResult",
     "ZkProofMetadata",
 ]

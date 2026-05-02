@@ -3,7 +3,7 @@ import base64
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.services.decision_service import decision_service
+from app.application.use_cases.verification_orchestrator import decision_service
 
 client = TestClient(app)
 
