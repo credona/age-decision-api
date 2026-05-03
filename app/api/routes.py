@@ -14,6 +14,7 @@ from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from app.api.input_validator import UnsupportedInputTypeError, validate_input_type
 from app.api.response_filter import filter_verify_response
 from app.application.dto.verify_command import VerifyCommand
 from app.application.use_cases.run_verification import RunVerificationUseCase
@@ -113,6 +114,8 @@ async def verify(
     )
 
     try:
+        validate_input_type(payload.input_type)
+
         result = await run_verification_use_case.execute(
             VerifyCommand(
                 image_base64=payload.image_base64,
@@ -123,6 +126,25 @@ async def verify(
             )
         )
         return filter_verify_response(result)
+
+    except UnsupportedInputTypeError as exc:
+        verification_orchestrator.log_event(
+            event="verification_rejected",
+            request_id=request_id,
+            correlation_id=correlation_id,
+            extra_data={
+                "error_type": LOG_ERROR_TYPE_VALIDATION,
+                "error_code": "UNSUPPORTED_INPUT_TYPE",
+            },
+        )
+
+        return _error_response(
+            status_code=400,
+            request_id=request_id,
+            correlation_id=correlation_id,
+            code="UNSUPPORTED_INPUT_TYPE",
+            message=str(exc),
+        )
 
     except ValueError:
         verification_orchestrator.log_event(

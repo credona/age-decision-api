@@ -8,6 +8,9 @@ Global project direction is tracked in the central Age Decision repository.
 
 <ul>
   <li>Introduced hexagonal orchestration boundaries for API, application, domain, and infrastructure code.</li>
+  <li>Added privacy-safe logging tests covering raw payloads, downstream responses, scores, thresholds, and base64 leakage.</li>
+  <li>Added deterministic rejection for unsupported v3 input types before orchestration.</li>
+  <li>Prepared the public request model for v3 multi-input support while only image remains supported in v2.4.0.</li>
   <li>Renamed verification use case to run verification terminology.</li>
   <li>Renamed age and liveness normalized outputs to decision check and spoof check.</li>
   <li>Renamed normalizers to decision and spoof normalizers.</li>

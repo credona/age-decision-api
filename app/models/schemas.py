@@ -25,6 +25,7 @@ class ReadyResponse(BaseModel):
 
 
 class VerifyRequest(BaseModel):
+    input_type: Literal["image", "image_sequence", "video"] = Field(default="image")
     image_base64: str = Field(..., min_length=1)
     majority_country: Optional[str] = Field(default=None, examples=["FR", "US"])
     age_threshold: Optional[int] = Field(default=None, examples=[18, 21])
