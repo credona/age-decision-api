@@ -1,7 +1,7 @@
 {
   "service": "age-decision-api",
-  "version": "2.5.0",
-  "contract_version": "2.5",
+  "version": "2.6.0",
+  "contract_version": "2.6",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",

@@ -250,8 +250,8 @@ Generated view:
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.5.0",
-  "contract_version": "2.5",
+  "version": "2.6.0",
+  "contract_version": "2.6",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api"
 }
@@ -274,8 +274,8 @@ Generated view:
 ```json
 {
   "service": "age-decision-api",
-  "version": "2.5.0",
-  "contract_version": "2.5",
+  "version": "2.6.0",
+  "contract_version": "2.6",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",
