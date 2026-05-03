@@ -19,6 +19,10 @@ CHANGELOG_PATH = Path("CHANGELOG.md")
 MANAGED_VERSION = "2.5.0"
 
 CHANGELOG_SECTION_ITEMS: tuple[str, ...] = (
+    "Introduced strict client ports for Core and Antispoof services with full async contract.",
+    "Decoupled VerificationOrchestrator from infrastructure using port-based injection.",
+    "Enforced response_filter as final public contract boundary stripping internal payloads.",
+    "Added architecture tests preventing direct infrastructure usage in application layer.",
     "Introduced a versioned global scoring policy for cred_global_score.",
     "Defined cred_global_score as a conservative minimum of public downstream scores.",
     "Removed raw downstream response exposure from the public verification flow.",

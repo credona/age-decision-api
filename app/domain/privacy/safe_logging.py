@@ -11,6 +11,8 @@ PUBLIC_LOG_KEYS = {
     "reason_code",
     "reason_codes",
     "spoof_check_required",
+    "error_code",
+    "error_type",
 }
 
 FORBIDDEN_LOG_KEY_PARTS = (

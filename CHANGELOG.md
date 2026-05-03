@@ -7,6 +7,10 @@ Global project direction is tracked in the central Age Decision repository.
 <h2>2.5.0</h2>
 
 <ul>
+  <li>Introduced strict client ports for Core and Antispoof services with full async contract.</li>
+  <li>Decoupled VerificationOrchestrator from infrastructure using port-based injection.</li>
+  <li>Enforced response_filter as final public contract boundary stripping internal payloads.</li>
+  <li>Added architecture tests preventing direct infrastructure usage in application layer.</li>
   <li>Introduced a versioned global scoring policy for cred_global_score.</li>
   <li>Defined cred_global_score as a conservative minimum of public downstream scores.</li>
   <li>Removed raw downstream response exposure from the public verification flow.</li>

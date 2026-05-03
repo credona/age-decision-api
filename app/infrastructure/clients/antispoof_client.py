@@ -4,11 +4,7 @@ from app.infrastructure.config.settings import settings
 
 
 class AntispoofClient:
-    """
-    Client responsible for interacting with age-decision-antispoof service.
-
-    Supports dependency injection of an httpx.AsyncClient for testing.
-    """
+    """Client responsible for interacting with age-decision-antispoof service."""
 
     def __init__(self):
         self._client: httpx.AsyncClient | None = None
@@ -50,10 +46,27 @@ class AntispoofClient:
             self._raise_for_status(response, "antispoof")
             return response.json()
 
+    async def health_check(self) -> dict[str, str]:
+        return await self._check_health(settings.age_decision_antispoof_url)
+
+    async def _check_health(self, service_url: str) -> dict[str, str]:
+        try:
+            async with httpx.AsyncClient(
+                timeout=settings.request_timeout_seconds
+            ) as client:
+                response = await client.get(f"{service_url}/ready")
+
+                if response.status_code == 404:
+                    response = await client.get(f"{service_url}/health")
+
+                response.raise_for_status()
+
+            return {"status": "ready", "url": service_url}
+
+        except httpx.HTTPError:
+            return {"status": "unavailable", "url": service_url}
+
     def _raise_for_status(self, response: httpx.Response, service: str) -> None:
-        """
-        Raise a stable downstream error without exposing response internals.
-        """
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as exc:
