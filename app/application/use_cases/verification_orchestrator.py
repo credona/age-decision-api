@@ -1,3 +1,13 @@
+from app.domain.constants import (
+    DECISION_ALLOW,
+    DECISION_DENY,
+    INPUT_TYPE_IMAGE_BASE64,
+    REASON_VERIFICATION_FAILED,
+    STATUS_READY,
+    STATUS_UNAVAILABLE,
+    THRESHOLD_SOURCE_MAJORITY_COUNTRY,
+)
+
 import base64
 import logging
 from uuid import uuid4
@@ -9,16 +19,16 @@ from app.infrastructure.clients.core_client import core_client
 from app.infrastructure.config.settings import settings
 from app.application.ports.antispoof_client import AntispoofClientPort
 from app.application.ports.core_client import CoreClientPort
-from app.domain.normalizers.age_normalizer import normalize_age_check
-from app.domain.normalizers.liveness_normalizer import normalize_liveness_check
+from app.domain.normalizers.decision_normalizer import normalize_decision_check
+from app.domain.normalizers.spoof_normalizer import normalize_spoof_check
 from app.domain.privacy.metadata import build_privacy_metadata
-from app.domain.types import AgeCheck, LivenessCheck, PublicDecision, VerifyResult
+from app.domain.types import DecisionCheck, SpoofCheck, PublicDecision, VerifyResult
 from app.domain.proof.metadata import build_zk_proof_metadata
 
 logger = logging.getLogger("age_decision_api")
 
 
-class DecisionService:
+class VerificationOrchestrator:
     """
     Orchestrates the public verification flow.
 
@@ -53,13 +63,13 @@ class DecisionService:
                 response.raise_for_status()
 
             return {
-                "status": "ready",
+                "status": STATUS_READY,
                 "url": service_url,
             }
 
         except httpx.HTTPError:
             return {
-                "status": "unavailable",
+                "status": STATUS_UNAVAILABLE,
                 "url": service_url,
             }
 
@@ -106,7 +116,7 @@ class DecisionService:
             request_id=request_id,
             correlation_id=correlation_id,
             extra_data={
-                "input_type": "image_base64",
+                "input_type": INPUT_TYPE_IMAGE_BASE64,
                 "majority_country": majority_country,
                 "age_threshold": age_threshold,
             },
@@ -115,7 +125,7 @@ class DecisionService:
         if self.core_client is None or self.antispoof_client is None:
             raise RuntimeError("downstream_clients_not_configured")
 
-        raw_age = await self.core_client.estimate_image(
+        core_response = await self.core_client.estimate_image(
             file_content=file_content,
             filename="image.jpg",
             content_type="image/jpeg",
@@ -123,30 +133,30 @@ class DecisionService:
             params=core_params,
         )
 
-        raw_liveness = await self.antispoof_client.check_image(
+        antispoof_response = await self.antispoof_client.check_image(
             file_content=file_content,
             filename="image.jpg",
             content_type="image/jpeg",
             headers=headers,
         )
 
-        age_check = normalize_age_check(raw_age)
-        liveness_check = normalize_liveness_check(raw_liveness)
+        decision_check = normalize_decision_check(core_response)
+        spoof_check = normalize_spoof_check(antispoof_response)
 
         decision = self.aggregate(
-            age_check=age_check,
-            liveness_check=liveness_check,
+            decision_check=decision_check,
+            spoof_check=spoof_check,
         )
 
         cred_global_score = self.compute_cred_global_score(
-            age_check=age_check,
-            liveness_check=liveness_check,
+            decision_check=decision_check,
+            spoof_check=spoof_check,
         )
 
         reason = self.build_reason(
             decision=decision,
-            age_check=age_check,
-            liveness_check=liveness_check,
+            decision_check=decision_check,
+            spoof_check=spoof_check,
         )
 
         result: VerifyResult = {
@@ -154,8 +164,8 @@ class DecisionService:
             "correlation_id": correlation_id,
             "decision": decision,
             "cred_global_score": cred_global_score,
-            "age_check": age_check,
-            "liveness_check": liveness_check,
+            "decision_check": decision_check,
+            "spoof_check": spoof_check,
             "privacy": build_privacy_metadata(),
             "zk_proof": build_zk_proof_metadata(),
             "reason": reason,
@@ -163,8 +173,8 @@ class DecisionService:
 
         if settings.expose_raw_downstream_responses:
             result["raw"] = {
-                "age_decision": raw_age,
-                "antispoof_decision": raw_liveness,
+                "core": core_response,
+                "antispoof": antispoof_response,
             }
 
         self.log_event(
@@ -205,7 +215,7 @@ class DecisionService:
         params = {}
 
         if majority_country is not None:
-            params["majority_country"] = majority_country
+            params[THRESHOLD_SOURCE_MAJORITY_COUNTRY] = majority_country
 
         if age_threshold is not None:
             params["age_threshold"] = age_threshold
@@ -214,48 +224,51 @@ class DecisionService:
 
     def aggregate(
         self,
-        age_check: AgeCheck,
-        liveness_check: LivenessCheck,
+        decision_check: DecisionCheck,
+        spoof_check: SpoofCheck,
     ) -> PublicDecision:
         """Aggregate normalized checks into one public decision."""
-        if age_check["decision"] == "allow" and liveness_check["decision"] == "allow":
-            return "allow"
+        if (
+            decision_check["decision"] == DECISION_ALLOW
+            and spoof_check["decision"] == DECISION_ALLOW
+        ):
+            return DECISION_ALLOW
 
-        return "deny"
+        return DECISION_DENY
 
     def compute_cred_global_score(
         self,
-        age_check: AgeCheck,
-        liveness_check: LivenessCheck,
+        decision_check: DecisionCheck,
+        spoof_check: SpoofCheck,
     ) -> float:
         """
         Compute the global Credona decision score.
 
         The global score is intentionally conservative:
-        the weakest check determines the final confidence.
+        the weakest check determines the final signal quality.
         """
-        age_score = float(age_check.get("cred_decision_score", 0.0))
-        liveness_score = float(liveness_check.get("cred_antispoof_score", 0.0))
+        age_score = float(decision_check.get("cred_decision_score", 0.0))
+        spoof_score = float(spoof_check.get("cred_antispoof_score", 0.0))
 
-        return round(min(age_score, liveness_score), 4)
+        return round(min(age_score, spoof_score), 4)
 
     def build_reason(
         self,
         decision: PublicDecision,
-        age_check: AgeCheck,
-        liveness_check: LivenessCheck,
+        decision_check: DecisionCheck,
+        spoof_check: SpoofCheck,
     ) -> str | None:
         """Build a stable public rejection reason."""
-        if decision == "allow":
+        if decision == DECISION_ALLOW:
             return None
 
-        if age_check["decision"] == "deny":
-            return age_check["reason"] or "age_check_failed"
+        if decision_check["decision"] == DECISION_DENY:
+            return decision_check["reason"] or "decision_check_failed"
 
-        if liveness_check["decision"] == "deny":
-            return liveness_check["reason"] or "liveness_check_failed"
+        if spoof_check["decision"] == DECISION_DENY:
+            return spoof_check["reason"] or "spoof_check_failed"
 
-        return "verification_failed"
+        return REASON_VERIFICATION_FAILED
 
     def log_event(
         self,
@@ -276,7 +289,7 @@ class DecisionService:
         )
 
 
-decision_service = DecisionService(
+verification_orchestrator = VerificationOrchestrator(
     core=core_client,
     antispoof=antispoof_client,
 )

@@ -13,9 +13,9 @@
       "deny"
     ],
     "score_field": "cred_global_score",
-    "estimated_age_exposed": false,
-    "raw_age_confidence_exposed": false,
-    "raw_liveness_confidence_exposed": false,
+    "internal_estimate_exposed": false,
+    "raw_decision_signal_quality_exposed": false,
+    "raw_spoof_signal_quality_exposed": false,
     "downstream_raw_response_exposed_by_default": false,
     "legacy_cred_score_exposed": false
   }

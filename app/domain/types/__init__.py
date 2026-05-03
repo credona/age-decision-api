@@ -1,6 +1,6 @@
 from .decisions import (
-    AgeCheck,
-    LivenessCheck,
+    DecisionCheck,
+    SpoofCheck,
     PrivacyMetadata,
     PublicDecision,
     VerifyResult,
@@ -8,8 +8,8 @@ from .decisions import (
 )
 
 __all__ = [
-    "AgeCheck",
-    "LivenessCheck",
+    "DecisionCheck",
+    "SpoofCheck",
     "PrivacyMetadata",
     "PublicDecision",
     "VerifyResult",

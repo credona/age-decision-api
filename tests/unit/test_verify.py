@@ -3,7 +3,7 @@ import base64
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.application.use_cases.verification_orchestrator import decision_service
+from app.application.use_cases.verification_orchestrator import verification_orchestrator
 
 client = TestClient(app)
 
@@ -53,7 +53,7 @@ def test_verify_success(monkeypatch):
             "correlation_id": correlation_id,
             "decision": "allow",
             "cred_global_score": 0.8,
-            "age_check": {
+            "decision_check": {
                 "status": "passed",
                 "decision": "allow",
                 "reason": None,
@@ -65,7 +65,7 @@ def test_verify_success(monkeypatch):
                 },
                 "cred_decision_score": 0.8,
             },
-            "liveness_check": {
+            "spoof_check": {
                 "status": "passed",
                 "decision": "allow",
                 "reason": None,
@@ -90,7 +90,7 @@ def test_verify_success(monkeypatch):
         }
 
     monkeypatch.setattr(
-        decision_service,
+        verification_orchestrator,
         "verify_image_base64",
         fake_verify_image_base64,
     )
@@ -118,9 +118,9 @@ def test_verify_success(monkeypatch):
     assert data["correlation_id"] == "test-correlation-001"
     assert data["decision"] == "allow"
     assert data["cred_global_score"] == 0.8
-    assert data["age_check"]["cred_decision_score"] == 0.8
-    assert data["age_check"]["threshold"]["majority_country"] == "FR"
-    assert data["liveness_check"]["cred_antispoof_score"] == 0.99
+    assert data["decision_check"]["cred_decision_score"] == 0.8
+    assert data["decision_check"]["threshold"]["majority_country"] == "FR"
+    assert data["spoof_check"]["cred_antispoof_score"] == 0.99
     assert data["privacy"]["image_stored"] is False
     assert data["zk_proof"]["zk_ready"] is True
 

@@ -54,12 +54,12 @@ class NormalizedCheckResponse(BaseModel):
     reason: Optional[str] = None
 
 
-class AgeCheckResponse(NormalizedCheckResponse):
+class DecisionCheckResponse(NormalizedCheckResponse):
     threshold: ThresholdPolicy
     cred_decision_score: float
 
 
-class LivenessCheckResponse(NormalizedCheckResponse):
+class SpoofCheckResponse(NormalizedCheckResponse):
     is_real: Optional[bool] = None
     spoof_detected: Optional[bool] = None
     cred_antispoof_score: float
@@ -85,8 +85,8 @@ class VerifyResponse(BaseModel):
     correlation_id: str
     decision: Literal["allow", "deny"]
     cred_global_score: float
-    age_check: AgeCheckResponse
-    liveness_check: LivenessCheckResponse
+    decision_check: DecisionCheckResponse
+    spoof_check: SpoofCheckResponse
     privacy: PrivacyMetadataResponse
     zk_proof: ZkProofMetadataResponse
     reason: Optional[str] = None

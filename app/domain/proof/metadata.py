@@ -1,3 +1,6 @@
+from app.domain.constants import PROOF_STATUS_NOT_GENERATED, PROOF_TYPE_ZK_READY
+
+
 def build_zk_proof_metadata() -> dict:
     """
     Build ZK-ready metadata.
@@ -7,7 +10,7 @@ def build_zk_proof_metadata() -> dict:
     """
     return {
         "zk_ready": True,
-        "proof_type": "interactive_zero_knowledge_ready",
-        "proof_status": "not_generated",
+        "proof_type": PROOF_TYPE_ZK_READY,
+        "proof_status": PROOF_STATUS_NOT_GENERATED,
         "statement": "The API is ready to prove a threshold decision without exposing the raw image, estimated age, or raw model scores.",
     }

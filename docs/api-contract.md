@@ -66,7 +66,7 @@ GET /ready
   "correlation_id": "test-correlation-001",
   "decision": "allow",
   "cred_global_score": 0.8,
-  "age_check": {
+  "decision_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,
@@ -78,7 +78,7 @@ GET /ready
     },
     "cred_decision_score": 0.8
   },
-  "liveness_check": {
+  "spoof_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,

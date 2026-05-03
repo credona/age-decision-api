@@ -19,10 +19,14 @@ CHANGELOG_PATH = Path("CHANGELOG.md")
 MANAGED_VERSION = "2.4.0"
 
 CHANGELOG_SECTION_ITEMS: tuple[str, ...] = (
-    "Introduced orchestration architecture preparation for the API gateway.",
-    "Prepared strict API, application, domain, and infrastructure boundaries.",
-    "Kept public contract responses stable during internal structural changes.",
-    "Preserved privacy-first response guarantees and forbidden field checks.",
+    "Introduced hexagonal orchestration boundaries for API, application, domain, and infrastructure code.",
+    "Renamed verification use case to run verification terminology.",
+    "Renamed age and liveness normalized outputs to decision check and spoof check.",
+    "Renamed normalizers to decision and spoof normalizers.",
+    "Centralized public decisions, statuses, error codes, proof metadata, privacy metadata, and readiness constants.",
+    "Updated generated compatibility and usage documentation for neutral public terminology.",
+    "Preserved privacy-first response filtering and forbidden field checks.",
+    "Validated the refactor through Docker CI-equivalent checks.",
 )
 
 

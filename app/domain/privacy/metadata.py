@@ -1,3 +1,4 @@
+from app.domain.constants import RETENTION_POLICY_API
 from app.infrastructure.config.settings import settings
 from app.domain.types import PrivacyMetadata
 
@@ -14,5 +15,5 @@ def build_privacy_metadata() -> PrivacyMetadata:
         "biometric_template_stored": False,
         "raw_image_logged": False,
         "downstream_raw_response_exposed": settings.expose_raw_downstream_responses,
-        "retention_policy": "not_stored_by_api_gateway",
+        "retention_policy": RETENTION_POLICY_API,
     }

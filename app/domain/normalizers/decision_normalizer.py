@@ -1,6 +1,16 @@
+from app.domain.constants import (
+    CORE_DECISION_MATCH,
+    DECISION_ALLOW,
+    DECISION_DENY,
+    STATUS_FAILED,
+    STATUS_PASSED,
+    THRESHOLD_SOURCE_DEFAULT,
+    THRESHOLD_TYPE_MINIMUM_AGE,
+)
+
 from typing import Any
 
-from app.domain.types import AgeCheck
+from app.domain.types import DecisionCheck
 
 
 def _extract_score(value: Any) -> float | None:
@@ -38,14 +48,14 @@ def _threshold_from_raw(age_decision: dict[str, Any]) -> dict[str, Any]:
         return threshold
 
     return {
-        "type": "minimum_age",
+        "type": THRESHOLD_TYPE_MINIMUM_AGE,
         "value": 18,
-        "source": "default",
+        "source": THRESHOLD_SOURCE_DEFAULT,
         "majority_country": None,
     }
 
 
-def normalize_age_check(age_decision: dict[str, Any]) -> AgeCheck:
+def normalize_decision_check(age_decision: dict[str, Any]) -> DecisionCheck:
     """
     Normalize age-decision-core v2 response into the API contract.
 
@@ -56,16 +66,16 @@ def normalize_age_check(age_decision: dict[str, Any]) -> AgeCheck:
     """
     core_decision = age_decision.get("decision")
 
-    passed = core_decision == "match"
+    passed = core_decision == CORE_DECISION_MATCH
 
     return {
-        "status": "passed" if passed else "failed",
-        "decision": "allow" if passed else "deny",
+        "status": STATUS_PASSED if passed else STATUS_FAILED,
+        "decision": DECISION_ALLOW if passed else DECISION_DENY,
         "reason": None
         if passed
         else age_decision.get("rejection_reason")
         or age_decision.get("reason")
-        or "age_check_failed",
+        or "decision_check_failed",
         "threshold": _threshold_from_raw(age_decision),
         "cred_decision_score": _score_from_raw(age_decision),
     }

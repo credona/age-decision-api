@@ -1,3 +1,12 @@
+from app.domain.constants import (
+    ERROR_DOWNSTREAM,
+    ERROR_INVALID_BASE64,
+    ERROR_INVALID_REQUEST,
+    ERROR_MISSING_IMAGE,
+    LOG_ERROR_TYPE_DOWNSTREAM,
+    LOG_ERROR_TYPE_VALIDATION,
+    STATUS_READY,
+)
 from uuid import uuid4
 
 from fastapi import APIRouter, Header, Request
@@ -7,7 +16,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.response_filter import filter_verify_response
 from app.application.dto.verify_command import VerifyCommand
-from app.application.use_cases.verify_identity import VerifyIdentityUseCase
+from app.application.use_cases.run_verification import RunVerificationUseCase
 from app.models.schemas import (
     ErrorResponse,
     HealthResponse,
@@ -16,11 +25,13 @@ from app.models.schemas import (
     VerifyResponse,
 )
 from app.project import project_metadata
-from app.application.use_cases.verification_orchestrator import decision_service
+from app.application.use_cases.verification_orchestrator import (
+    verification_orchestrator,
+)
 
 router = APIRouter()
 
-verify_identity_use_case = VerifyIdentityUseCase(decision_service)
+run_verification_use_case = RunVerificationUseCase(verification_orchestrator)
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -53,12 +64,12 @@ async def ready() -> ReadyResponse:
 
     It checks whether downstream services are reachable.
     """
-    statuses = await decision_service.readiness()
+    statuses = await verification_orchestrator.readiness()
 
     global_status = (
         "ready"
-        if statuses["core"]["status"] == "ready"
-        and statuses["antispoof"]["status"] == "ready"
+        if statuses["core"]["status"] == STATUS_READY
+        and statuses["antispoof"]["status"] == STATUS_READY
         else "degraded"
     )
 
@@ -102,7 +113,7 @@ async def verify(
     )
 
     try:
-        result = await verify_identity_use_case.execute(
+        result = await run_verification_use_case.execute(
             VerifyCommand(
                 image_base64=payload.image_base64,
                 request_id=request_id,
@@ -114,13 +125,13 @@ async def verify(
         return filter_verify_response(result)
 
     except ValueError:
-        decision_service.log_event(
+        verification_orchestrator.log_event(
             event="verification_rejected",
             request_id=request_id,
             correlation_id=correlation_id,
             extra_data={
-                "error_type": "validation_error",
-                "error_code": "invalid_base64_image",
+                "error_type": LOG_ERROR_TYPE_VALIDATION,
+                "error_code": ERROR_INVALID_BASE64,
             },
         )
 
@@ -128,18 +139,18 @@ async def verify(
             status_code=400,
             request_id=request_id,
             correlation_id=correlation_id,
-            code="invalid_base64_image",
+            code=ERROR_INVALID_BASE64,
             message="Invalid request.",
         )
 
     except Exception:
-        decision_service.log_event(
+        verification_orchestrator.log_event(
             event="verification_failed",
             request_id=request_id,
             correlation_id=correlation_id,
             extra_data={
-                "error_type": "downstream_error",
-                "error_code": "downstream_service_error",
+                "error_type": LOG_ERROR_TYPE_DOWNSTREAM,
+                "error_code": ERROR_DOWNSTREAM,
             },
         )
 
@@ -147,7 +158,7 @@ async def verify(
             status_code=502,
             request_id=request_id,
             correlation_id=correlation_id,
-            code="downstream_service_error",
+            code=ERROR_DOWNSTREAM,
             message="An upstream service error has occurred.",
         )
 
@@ -169,12 +180,12 @@ async def handle_request_validation_error(
     )
     error_code = _map_validation_error_code(errors)
 
-    decision_service.log_event(
+    verification_orchestrator.log_event(
         event="verification_rejected",
         request_id=request_id,
         correlation_id=correlation_id,
         extra_data={
-            "error_type": "validation_error",
+            "error_type": LOG_ERROR_TYPE_VALIDATION,
             "error_code": error_code,
         },
     )
@@ -239,6 +250,6 @@ def _map_validation_error_code(errors: list[dict]) -> str:
             "missing",
             "value_error.missing",
         }:
-            return "missing_image_base64"
+            return ERROR_MISSING_IMAGE
 
-    return "invalid_request"
+    return ERROR_INVALID_REQUEST

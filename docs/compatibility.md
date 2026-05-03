@@ -69,7 +69,7 @@ GET /ready
   "correlation_id": "test-correlation-001",
   "decision": "allow",
   "cred_global_score": 0.8,
-  "age_check": {
+  "decision_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,
@@ -81,7 +81,7 @@ GET /ready
     },
     "cred_decision_score": 0.8
   },
-  "liveness_check": {
+  "spoof_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,
@@ -287,9 +287,9 @@ Generated view:
       "deny"
     ],
     "score_field": "cred_global_score",
-    "estimated_age_exposed": false,
-    "raw_age_confidence_exposed": false,
-    "raw_liveness_confidence_exposed": false,
+    "internal_estimate_exposed": false,
+    "raw_decision_signal_quality_exposed": false,
+    "raw_spoof_signal_quality_exposed": false,
     "downstream_raw_response_exposed_by_default": false,
     "legacy_cred_score_exposed": false
   }

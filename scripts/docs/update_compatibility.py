@@ -22,9 +22,9 @@ def main() -> None:
         "public_contract": {
             "decision_values": ["allow", "deny"],
             "score_field": "cred_global_score",
-            "estimated_age_exposed": False,
-            "raw_age_confidence_exposed": False,
-            "raw_liveness_confidence_exposed": False,
+            "internal_estimate_exposed": False,
+            "raw_decision_signal_quality_exposed": False,
+            "raw_spoof_signal_quality_exposed": False,
             "downstream_raw_response_exposed_by_default": False,
             "legacy_cred_score_exposed": False,
         },

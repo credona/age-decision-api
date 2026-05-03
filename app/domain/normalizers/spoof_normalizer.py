@@ -1,6 +1,14 @@
+from app.domain.constants import (
+    SPOOF_DECISION_REAL,
+    DECISION_ALLOW,
+    DECISION_DENY,
+    STATUS_FAILED,
+    STATUS_PASSED,
+)
+
 from typing import Any
 
-from app.domain.types import LivenessCheck
+from app.domain.types import SpoofCheck
 
 
 def _extract_score(value: Any) -> float | None:
@@ -28,9 +36,9 @@ def _score_from_raw(antispoof_decision: dict[str, Any]) -> float:
     return score if score is not None else 0.0
 
 
-def normalize_liveness_check(
+def normalize_spoof_check(
     antispoof_decision: dict[str, Any],
-) -> LivenessCheck:
+) -> SpoofCheck:
     """
     Normalize age-decision-antispoof v2 response into the API contract.
 
@@ -42,16 +50,18 @@ def normalize_liveness_check(
     spoof_detected = antispoof_decision.get("spoof_detected")
     decision = antispoof_decision.get("decision")
 
-    passed = decision == "real" or is_real is True or spoof_detected is False
+    passed = (
+        decision == SPOOF_DECISION_REAL or is_real is True or spoof_detected is False
+    )
 
     return {
-        "status": "passed" if passed else "failed",
-        "decision": "allow" if passed else "deny",
+        "status": STATUS_PASSED if passed else STATUS_FAILED,
+        "decision": DECISION_ALLOW if passed else DECISION_DENY,
         "reason": None
         if passed
         else antispoof_decision.get("rejection_reason")
         or antispoof_decision.get("reason")
-        or "liveness_check_failed",
+        or "spoof_check_failed",
         "is_real": is_real,
         "spoof_detected": spoof_detected,
         "cred_antispoof_score": _score_from_raw(antispoof_decision),

@@ -1,8 +1,8 @@
 from app.application.dto.verify_command import VerifyCommand
-from app.application.use_cases.verification_orchestrator import DecisionService
+from app.application.use_cases.verification_orchestrator import VerificationOrchestrator
 
 
-class VerifyIdentityUseCase:
+class RunVerificationUseCase:
     """
     Application use case for public verification.
 
@@ -10,7 +10,7 @@ class VerifyIdentityUseCase:
     The decision service currently owns orchestration and will be split next.
     """
 
-    def __init__(self, service: DecisionService):
+    def __init__(self, service: VerificationOrchestrator):
         self.service = service
 
     async def execute(self, command: VerifyCommand) -> dict:

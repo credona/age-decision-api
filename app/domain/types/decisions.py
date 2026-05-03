@@ -11,7 +11,7 @@ class ThresholdPolicy(TypedDict):
     majority_country: Optional[str]
 
 
-class AgeCheck(TypedDict):
+class DecisionCheck(TypedDict):
     status: Literal["passed", "failed", "unknown"]
     decision: PublicDecision
     reason: Optional[str]
@@ -19,7 +19,7 @@ class AgeCheck(TypedDict):
     cred_decision_score: float
 
 
-class LivenessCheck(TypedDict):
+class SpoofCheck(TypedDict):
     status: Literal["passed", "failed", "unknown"]
     decision: PublicDecision
     reason: Optional[str]
@@ -48,8 +48,8 @@ class VerifyResult(TypedDict, total=False):
     correlation_id: str
     decision: PublicDecision
     cred_global_score: float
-    age_check: AgeCheck
-    liveness_check: LivenessCheck
+    decision_check: DecisionCheck
+    spoof_check: SpoofCheck
     privacy: PrivacyMetadata
     zk_proof: ZkProofMetadata
     reason: Optional[str]
