@@ -4,6 +4,24 @@ This changelog tracks changes specific to Age Decision API.
 
 Global project direction is tracked in the central Age Decision repository.
 
+<h2>2.4.0</h2>
+
+<ul>
+  <li>Introduced hexagonal orchestration boundaries for API, application, domain, and infrastructure code.</li>
+  <li>Added privacy-safe logging tests covering raw payloads, downstream responses, scores, thresholds, and base64 leakage.</li>
+  <li>Added deterministic rejection for unsupported v3 input types before orchestration.</li>
+  <li>Prepared the public request model for v3 multi-input support while only image remains supported in v2.4.0.</li>
+  <li>Renamed verification use case to run verification terminology.</li>
+  <li>Renamed age and liveness normalized outputs to decision check and spoof check.</li>
+  <li>Renamed normalizers to decision and spoof normalizers.</li>
+  <li>Centralized public decisions, statuses, error codes, proof metadata, privacy metadata, and readiness constants.</li>
+  <li>Updated generated compatibility and usage documentation for neutral public terminology.</li>
+  <li>Preserved privacy-first response filtering and forbidden field checks.</li>
+  <li>Validated the refactor through Docker CI-equivalent checks.</li>
+</ul>
+
+<hr>
+
 <h2>2.3.0</h2>
 
 <ul>

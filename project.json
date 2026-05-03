@@ -1,8 +1,8 @@
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.3.0",
-  "contract_version": "2.3",
+  "version": "2.4.0",
+  "contract_version": "2.4",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api",
   "license": "Apache-2.0",

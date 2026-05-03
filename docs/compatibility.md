@@ -69,7 +69,7 @@ GET /ready
   "correlation_id": "test-correlation-001",
   "decision": "allow",
   "cred_global_score": 0.8,
-  "age_check": {
+  "decision_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,
@@ -81,7 +81,7 @@ GET /ready
     },
     "cred_decision_score": 0.8
   },
-  "liveness_check": {
+  "spoof_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,
@@ -250,8 +250,8 @@ Generated view:
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.3.0",
-  "contract_version": "2.3",
+  "version": "2.4.0",
+  "contract_version": "2.4",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api"
 }
@@ -274,8 +274,8 @@ Generated view:
 ```json
 {
   "service": "age-decision-api",
-  "version": "2.3.0",
-  "contract_version": "2.3",
+  "version": "2.4.0",
+  "contract_version": "2.4",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",
@@ -287,9 +287,9 @@ Generated view:
       "deny"
     ],
     "score_field": "cred_global_score",
-    "estimated_age_exposed": false,
-    "raw_age_confidence_exposed": false,
-    "raw_liveness_confidence_exposed": false,
+    "internal_estimate_exposed": false,
+    "raw_decision_signal_quality_exposed": false,
+    "raw_spoof_signal_quality_exposed": false,
     "downstream_raw_response_exposed_by_default": false,
     "legacy_cred_score_exposed": false
   }

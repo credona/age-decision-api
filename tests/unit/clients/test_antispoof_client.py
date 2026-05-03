@@ -3,7 +3,7 @@ from httpx import Response
 from httpx._transports.base import AsyncBaseTransport
 from httpx import AsyncClient, Request
 
-from app.clients.antispoof_client import AntispoofClient
+from app.infrastructure.clients.antispoof_client import AntispoofClient
 
 
 class MockTransport(AsyncBaseTransport):

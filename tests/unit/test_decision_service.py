@@ -2,12 +2,12 @@ import base64
 
 import pytest
 
-from app.services.decision_service import DecisionService
+from app.application.use_cases.verification_orchestrator import VerificationOrchestrator
 
 
 @pytest.mark.asyncio
 async def test_decode_base64_image():
-    service = DecisionService()
+    service = VerificationOrchestrator()
 
     payload = base64.b64encode(b"fake-image").decode("utf-8")
 
@@ -18,7 +18,7 @@ async def test_decode_base64_image():
 
 @pytest.mark.asyncio
 async def test_decode_data_url_base64_image():
-    service = DecisionService()
+    service = VerificationOrchestrator()
 
     encoded = base64.b64encode(b"fake-image").decode("utf-8")
     payload = f"data:image/jpeg;base64,{encoded}"
@@ -29,23 +29,23 @@ async def test_decode_data_url_base64_image():
 
 
 def test_decode_invalid_base64_image():
-    service = DecisionService()
+    service = VerificationOrchestrator()
 
     with pytest.raises(ValueError, match="invalid_base64_image"):
         service.decode_base64_image("invalid-base64")
 
 
 def test_compute_cred_global_score_uses_lowest_score():
-    service = DecisionService()
+    service = VerificationOrchestrator()
 
     result = service.compute_cred_global_score(
-        age_check={
+        decision_check={
             "status": "passed",
             "decision": "allow",
             "reason": None,
             "cred_decision_score": 0.82,
         },
-        liveness_check={
+        spoof_check={
             "status": "passed",
             "decision": "allow",
             "reason": None,
@@ -57,10 +57,10 @@ def test_compute_cred_global_score_uses_lowest_score():
 
 
 def test_compute_cred_global_score_keeps_lowest_score_when_inputs_are_valid():
-    service = DecisionService()
+    service = VerificationOrchestrator()
 
     result = service.compute_cred_global_score(
-        age_check={
+        decision_check={
             "status": "passed",
             "decision": "allow",
             "reason": None,
@@ -72,7 +72,7 @@ def test_compute_cred_global_score_keeps_lowest_score_when_inputs_are_valid():
             },
             "cred_decision_score": 0.82,
         },
-        liveness_check={
+        spoof_check={
             "status": "passed",
             "decision": "allow",
             "reason": None,
@@ -86,15 +86,15 @@ def test_compute_cred_global_score_keeps_lowest_score_when_inputs_are_valid():
 
 
 def test_aggregate_allow_when_all_checks_allow():
-    service = DecisionService()
+    service = VerificationOrchestrator()
 
     result = service.aggregate(
-        age_check={
+        decision_check={
             "status": "passed",
             "decision": "allow",
             "reason": None,
         },
-        liveness_check={
+        spoof_check={
             "status": "passed",
             "decision": "allow",
             "reason": None,
@@ -104,16 +104,16 @@ def test_aggregate_allow_when_all_checks_allow():
     assert result == "allow"
 
 
-def test_aggregate_deny_when_age_check_fails():
-    service = DecisionService()
+def test_aggregate_deny_when_decision_check_fails():
+    service = VerificationOrchestrator()
 
     result = service.aggregate(
-        age_check={
+        decision_check={
             "status": "failed",
             "decision": "deny",
-            "reason": "age_check_failed",
+            "reason": "decision_check_failed",
         },
-        liveness_check={
+        spoof_check={
             "status": "passed",
             "decision": "allow",
             "reason": None,

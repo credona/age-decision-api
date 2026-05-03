@@ -88,8 +88,8 @@ Expected health response:
 {
   "status": "ok",
   "service": "age-decision-api",
-  "version": "2.3.0",
-  "contract_version": "2.3"
+  "version": "2.4.0",
+  "contract_version": "2.4"
 }
 ```
 <!-- END:HEALTH_RESPONSE -->
@@ -101,8 +101,8 @@ Expected version response:
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.3.0",
-  "contract_version": "2.3",
+  "version": "2.4.0",
+  "contract_version": "2.4",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api"
 }
@@ -116,8 +116,8 @@ Expected readiness response:
 {
   "status": "ready",
   "service": "age-decision-api",
-  "version": "2.3.0",
-  "contract_version": "2.3",
+  "version": "2.4.0",
+  "contract_version": "2.4",
   "core": {
     "status": "ready",
     "url": "http://age-decision-core:8000"
@@ -152,7 +152,7 @@ Example response:
   "correlation_id": "test-correlation-001",
   "decision": "allow",
   "cred_global_score": 0.8,
-  "age_check": {
+  "decision_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,
@@ -164,7 +164,7 @@ Example response:
     },
     "cred_decision_score": 0.8
   },
-  "liveness_check": {
+  "spoof_check": {
     "status": "passed",
     "decision": "allow",
     "reason": null,
@@ -210,9 +210,9 @@ docker run --rm \
 The public `/verify` response does not expose:
 
 - estimated age
-- raw age confidence
+- raw decision signal quality
 - `is_adult`
-- raw liveness confidence
+- raw spoof signal quality
 - spoof score
 - downstream model details
 - legacy `cred_score` alias
@@ -275,8 +275,8 @@ Run validation only:
 ```json
 {
   "service": "age-decision-api",
-  "version": "2.3.0",
-  "contract_version": "2.3",
+  "version": "2.4.0",
+  "contract_version": "2.4",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",
@@ -288,9 +288,9 @@ Run validation only:
       "deny"
     ],
     "score_field": "cred_global_score",
-    "estimated_age_exposed": false,
-    "raw_age_confidence_exposed": false,
-    "raw_liveness_confidence_exposed": false,
+    "internal_estimate_exposed": false,
+    "raw_decision_signal_quality_exposed": false,
+    "raw_spoof_signal_quality_exposed": false,
     "downstream_raw_response_exposed_by_default": false,
     "legacy_cred_score_exposed": false
   }
