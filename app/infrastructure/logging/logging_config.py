@@ -1,42 +1,49 @@
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
+
+from app.domain.privacy.safe_logging import sanitize_log_payload
+from app.project import project_metadata
 
 
 class JsonFormatter(logging.Formatter):
-    """
-    JSON log formatter compatible with ELK, Datadog and most log pipelines.
-    """
+    """Privacy-safe JSON log formatter."""
 
     def format(self, record: logging.LogRecord) -> str:
-        payload: dict[str, Any] = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "level": record.levelname,
+        base_payload: dict[str, Any] = {
+            "timestamp": datetime.now(UTC).isoformat(),
+            "level": record.levelname.lower(),
+            "service": project_metadata.service_name,
+            "version": project_metadata.version,
+            "contract_version": project_metadata.contract_version,
             "logger": record.name,
-            "message": record.getMessage(),
         }
 
-        if hasattr(record, "event"):
-            payload["event"] = record.event
+        event_payload = {
+            "event": getattr(record, "event", record.getMessage()),
+            "request_id": getattr(record, "request_id", None),
+            "correlation_id": getattr(record, "correlation_id", None),
+        }
 
-        if hasattr(record, "request_id"):
-            payload["request_id"] = record.request_id
+        extra_data = getattr(record, "extra_data", {})
+        if isinstance(extra_data, dict):
+            event_payload.update(extra_data)
 
-        if hasattr(record, "correlation_id"):
-            payload["correlation_id"] = record.correlation_id
+        safe_payload = sanitize_log_payload(event_payload)
 
-        if hasattr(record, "extra_data"):
-            payload["data"] = record.extra_data
-
-        return json.dumps(payload, default=str)
+        return json.dumps(
+            {
+                **base_payload,
+                **safe_payload,
+            },
+            default=str,
+            ensure_ascii=False,
+            sort_keys=True,
+        )
 
 
 def configure_logging(log_level: str) -> None:
-    """
-    Configure application logging once at startup.
-    """
-
     handler = logging.StreamHandler()
     handler.setFormatter(JsonFormatter())
 

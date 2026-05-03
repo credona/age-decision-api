@@ -1,8 +1,8 @@
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.4.0",
-  "contract_version": "2.4",
+  "version": "2.5.0",
+  "contract_version": "2.5",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api",
   "license": "Apache-2.0",
@@ -21,7 +21,7 @@
     }
   },
   "runtime": {
-    "dev": {
+    "common": {
       "APP_PORT": "8002",
       "AGE_DECISION_CORE_URL": "http://age-decision-core:8000",
       "AGE_DECISION_ANTISPOOF_URL": "http://age-decision-antispoof:8001",
@@ -29,13 +29,7 @@
       "LOG_LEVEL": "INFO",
       "LOG_FORMAT": "json"
     },
-    "prod": {
-      "APP_PORT": "8002",
-      "AGE_DECISION_CORE_URL": "http://age-decision-core:8000",
-      "AGE_DECISION_ANTISPOOF_URL": "http://age-decision-antispoof:8001",
-      "REQUEST_TIMEOUT": "3000",
-      "LOG_LEVEL": "INFO",
-      "LOG_FORMAT": "json"
-    }
+    "dev": {},
+    "prod": {}
   }
 }

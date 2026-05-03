@@ -24,11 +24,39 @@ for key in ("version", "repository", "license", "docker", "runtime"):
 if profile not in project["docker"]:
     raise SystemExit(f"Missing docker.{profile} in project.json")
 
-if profile not in project["runtime"]:
+runtime = project["runtime"]
+
+if "common" not in runtime:
+    raise SystemExit("Missing runtime.common in project.json")
+
+if profile not in runtime:
     raise SystemExit(f"Missing runtime.{profile} in project.json")
 
 docker_conf = project["docker"][profile]
-runtime_conf = project["runtime"][profile]
+runtime_conf = {
+    **runtime["common"],
+    **runtime[profile],
+}
+
+if "APP_PORT" not in runtime_conf:
+    raise SystemExit("Missing APP_PORT in merged runtime configuration")
+
+forbidden_runtime_keys = {
+    "EXPOSE_RAW_DOWNSTREAM_RESPONSES",
+    "RAW_DOWNSTREAM_RESPONSES",
+    "AGE_THRESHOLD",
+    "SPOOF_THRESHOLD",
+    "MODEL_PATH",
+    "ANTISPOOF_MODEL_PATH",
+    "AGE_MODEL_PATH",
+}
+
+forbidden_found = sorted(forbidden_runtime_keys.intersection(runtime_conf))
+
+if forbidden_found:
+    raise SystemExit(
+        "Forbidden runtime keys found: " + ", ".join(forbidden_found)
+    )
 
 compose_env = {
     "AGE_DECISION_API_VERSION": project["version"],

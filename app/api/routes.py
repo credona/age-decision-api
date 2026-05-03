@@ -1,12 +1,3 @@
-from app.domain.constants import (
-    ERROR_DOWNSTREAM,
-    ERROR_INVALID_BASE64,
-    ERROR_INVALID_REQUEST,
-    ERROR_MISSING_IMAGE,
-    LOG_ERROR_TYPE_DOWNSTREAM,
-    LOG_ERROR_TYPE_VALIDATION,
-    STATUS_READY,
-)
 from uuid import uuid4
 
 from fastapi import APIRouter, Header, Request
@@ -18,6 +9,20 @@ from app.api.input_validator import UnsupportedInputTypeError, validate_input_ty
 from app.api.response_filter import filter_verify_response
 from app.application.dto.verify_command import VerifyCommand
 from app.application.use_cases.run_verification import RunVerificationUseCase
+from app.application.use_cases.verification_orchestrator import (
+    verification_orchestrator,
+)
+from app.domain.constants import (
+    ERROR_DOWNSTREAM,
+    ERROR_INVALID_BASE64,
+    ERROR_INVALID_REQUEST,
+    ERROR_MISSING_IMAGE,
+    LOG_ERROR_TYPE_DOWNSTREAM,
+    LOG_ERROR_TYPE_VALIDATION,
+    STATUS_READY,
+)
+from app.infrastructure.clients.antispoof_client import antispoof_client
+from app.infrastructure.clients.core_client import core_client
 from app.models.schemas import (
     ErrorResponse,
     HealthResponse,
@@ -26,22 +31,16 @@ from app.models.schemas import (
     VerifyResponse,
 )
 from app.project import project_metadata
-from app.application.use_cases.verification_orchestrator import (
-    verification_orchestrator,
-)
 
 router = APIRouter()
 
+verification_orchestrator.core_client = core_client
+verification_orchestrator.antispoof_client = antispoof_client
 run_verification_use_case = RunVerificationUseCase(verification_orchestrator)
 
 
 @router.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
-    """
-    Basic health endpoint.
-
-    It only confirms that the API process is running.
-    """
     return HealthResponse(
         status="ok",
         service=project_metadata.service_name,
@@ -52,21 +51,12 @@ def health() -> HealthResponse:
 
 @router.get("/version")
 def version():
-    """
-    Return service version metadata.
-    """
     return project_metadata.model_dump()
 
 
 @router.get("/ready", response_model=ReadyResponse)
 async def ready() -> ReadyResponse:
-    """
-    Readiness endpoint.
-
-    It checks whether downstream services are reachable.
-    """
     statuses = await verification_orchestrator.readiness()
-
     global_status = (
         "ready"
         if statuses["core"]["status"] == STATUS_READY
@@ -97,17 +87,6 @@ async def verify(
     x_request_id: str | None = Header(default=None, alias="X-Request-ID"),
     x_correlation_id: str | None = Header(default=None, alias="X-Correlation-ID"),
 ):
-    """
-    Public image verification endpoint.
-
-    It accepts a base64 image payload and orchestrates:
-    - age-decision-core /estimate
-    - age-decision-antispoof /check
-    - consolidated decision
-    - global Credona score
-    - privacy metadata
-    - ZK-ready metadata
-    """
     request_id, correlation_id = _resolve_request_identifiers(
         x_request_id=x_request_id,
         x_correlation_id=x_correlation_id,
@@ -115,7 +94,6 @@ async def verify(
 
     try:
         validate_input_type(payload.input_type)
-
         result = await run_verification_use_case.execute(
             VerifyCommand(
                 image_base64=payload.image_base64,
@@ -125,6 +103,7 @@ async def verify(
                 age_threshold=payload.age_threshold,
             )
         )
+
         return filter_verify_response(result)
 
     except UnsupportedInputTypeError as exc:
@@ -137,7 +116,6 @@ async def verify(
                 "error_code": "UNSUPPORTED_INPUT_TYPE",
             },
         )
-
         return _error_response(
             status_code=400,
             request_id=request_id,
@@ -156,7 +134,6 @@ async def verify(
                 "error_code": ERROR_INVALID_BASE64,
             },
         )
-
         return _error_response(
             status_code=400,
             request_id=request_id,
@@ -175,7 +152,6 @@ async def verify(
                 "error_code": ERROR_DOWNSTREAM,
             },
         )
-
         return _error_response(
             status_code=502,
             request_id=request_id,
@@ -186,7 +162,8 @@ async def verify(
 
 
 async def handle_request_validation_error(
-    request: Request, exc: RequestValidationError
+    request: Request,
+    exc: RequestValidationError,
 ):
     errors = exc.errors()
     scope_path = request.scope.get("path")
@@ -222,13 +199,15 @@ async def handle_request_validation_error(
 
 
 def _should_normalize_verify_validation_errors(errors: list[dict]) -> bool:
-    """Only JSON bodies that decode and fail field-level VerifyRequest checks."""
     for error in errors:
         loc_labels = tuple(str(part) for part in error.get("loc", ()))
+
         if not loc_labels or loc_labels[0] != "body":
             continue
+
         if len(loc_labels) >= 2:
             return True
+
     return False
 
 
@@ -265,7 +244,6 @@ def _map_validation_error_code(errors: list[dict]) -> str:
     for error in errors:
         loc = error.get("loc", ())
         error_type = error.get("type", "")
-
         loc_labels = tuple(str(part) for part in loc)
 
         if "image_base64" in loc_labels and error_type in {
