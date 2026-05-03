@@ -24,6 +24,7 @@ from app.domain.normalizers.spoof_normalizer import normalize_spoof_check
 from app.domain.privacy.metadata import build_privacy_metadata
 from app.domain.types import DecisionCheck, SpoofCheck, PublicDecision, VerifyResult
 from app.domain.proof.metadata import build_zk_proof_metadata
+from app.domain.scoring.policy import compute_cred_global_score
 
 logger = logging.getLogger("age_decision_api")
 
@@ -171,12 +172,6 @@ class VerificationOrchestrator:
             "reason": reason,
         }
 
-        if settings.expose_raw_downstream_responses:
-            result["raw"] = {
-                "core": core_response,
-                "antispoof": antispoof_response,
-            }
-
         self.log_event(
             event="verification_completed",
             request_id=request_id,
@@ -245,12 +240,12 @@ class VerificationOrchestrator:
         Compute the global Credona decision score.
 
         The global score is intentionally conservative:
-        the weakest check determines the final signal quality.
+        the weakest normalized public check determines the final signal quality.
         """
-        age_score = float(decision_check.get("cred_decision_score", 0.0))
-        spoof_score = float(spoof_check.get("cred_antispoof_score", 0.0))
-
-        return round(min(age_score, spoof_score), 4)
+        return compute_cred_global_score(
+            cred_decision_score=float(decision_check.get("cred_decision_score", 0.0)),
+            cred_antispoof_score=float(spoof_check.get("cred_antispoof_score", 0.0)),
+        )
 
     def build_reason(
         self,

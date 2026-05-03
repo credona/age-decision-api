@@ -4,6 +4,23 @@ This changelog tracks changes specific to Age Decision API.
 
 Global project direction is tracked in the central Age Decision repository.
 
+<h2>2.5.0</h2>
+
+<ul>
+  <li>Introduced a versioned global scoring policy for cred_global_score.</li>
+  <li>Defined cred_global_score as a conservative minimum of public downstream scores.</li>
+  <li>Removed raw downstream response exposure from the public verification flow.</li>
+  <li>Simplified runtime configuration with shared common values and empty dev/prod overrides.</li>
+  <li>Removed non-deterministic runtime flags and downstream model threshold settings.</li>
+  <li>Added score bounds, monotonicity, stability, and privacy regression tests.</li>
+  <li>Documented the public API scoring methodology.</li>
+  <li>Preserved response_filter as the final public contract barrier.</li>
+  <li>Preserved privacy-first orchestration without exposing downstream internals.</li>
+  <li>Validated the release through Docker CI-equivalent checks.</li>
+</ul>
+
+<hr>
+
 <h2>2.4.0</h2>
 
 <ul>

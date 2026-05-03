@@ -1,4 +1,4 @@
-from typing import Any, Literal, Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -91,4 +91,3 @@ class VerifyResponse(BaseModel):
     privacy: PrivacyMetadataResponse
     zk_proof: ZkProofMetadataResponse
     reason: Optional[str] = None
-    raw: Optional[dict[str, Any]] = Field(default=None, exclude=True)

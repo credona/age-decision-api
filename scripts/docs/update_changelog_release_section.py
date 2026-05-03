@@ -1,4 +1,4 @@
-"""Deterministically maintain the v2.4.0 release section in CHANGELOG.md."""
+"""Deterministically maintain the v2.5.0 release section in CHANGELOG.md."""
 
 from __future__ import annotations
 
@@ -16,20 +16,20 @@ from lib.changelog import (  # noqa: E402
 )
 
 CHANGELOG_PATH = Path("CHANGELOG.md")
-MANAGED_VERSION = "2.4.0"
+MANAGED_VERSION = "2.5.0"
 
 CHANGELOG_SECTION_ITEMS: tuple[str, ...] = (
-    "Introduced hexagonal orchestration boundaries for API, application, domain, and infrastructure code.",
-    "Added privacy-safe logging tests covering raw payloads, downstream responses, scores, thresholds, and base64 leakage.",
-    "Added deterministic rejection for unsupported v3 input types before orchestration.",
-    "Prepared the public request model for v3 multi-input support while only image remains supported in v2.4.0.",
-    "Renamed verification use case to run verification terminology.",
-    "Renamed age and liveness normalized outputs to decision check and spoof check.",
-    "Renamed normalizers to decision and spoof normalizers.",
-    "Centralized public decisions, statuses, error codes, proof metadata, privacy metadata, and readiness constants.",
-    "Updated generated compatibility and usage documentation for neutral public terminology.",
-    "Preserved privacy-first response filtering and forbidden field checks.",
-    "Validated the refactor through Docker CI-equivalent checks.",
+    "Introduced a versioned global scoring policy for cred_global_score.",
+    "Defined cred_global_score as a conservative minimum of public downstream scores.",
+    "Removed raw downstream response exposure from the public verification flow.",
+    "Simplified runtime configuration with shared common values and empty "
+    "dev/prod overrides.",
+    "Removed non-deterministic runtime flags and downstream model threshold settings.",
+    "Added score bounds, monotonicity, stability, and privacy regression tests.",
+    "Documented the public API scoring methodology.",
+    "Preserved response_filter as the final public contract barrier.",
+    "Preserved privacy-first orchestration without exposing downstream internals.",
+    "Validated the release through Docker CI-equivalent checks.",
 )
 
 

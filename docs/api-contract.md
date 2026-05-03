@@ -172,6 +172,12 @@ Score produced by the AntiSpoof service for presentation attack detection.
 
 Final API-level score.
 
+Policy identifier:
+
+<pre>
+credona.api.global-min-score.v1
+</pre>
+
 It is computed conservatively as the minimum of:
 
 ```text
@@ -253,3 +259,11 @@ It is checked by CI and documented in:
 ```text
 docs/compatibility.md
 ```
+
+<hr>
+
+<h2>Scoring methodology</h2>
+
+See:
+
+<pre>docs/scoring.md</pre>

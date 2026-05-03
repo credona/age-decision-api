@@ -53,4 +53,3 @@ class VerifyResult(TypedDict, total=False):
     privacy: PrivacyMetadata
     zk_proof: ZkProofMetadata
     reason: Optional[str]
-    raw: dict

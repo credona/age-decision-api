@@ -1,4 +1,3 @@
-from app.domain.constants import BOOLEAN_TRUE
 import os
 from dataclasses import dataclass
 
@@ -28,13 +27,8 @@ class Settings:
 
     request_timeout_ms: int = int(os.getenv("REQUEST_TIMEOUT", "3000"))
 
-    expose_raw_downstream_responses: bool = (
-        os.getenv("EXPOSE_RAW_DOWNSTREAM_RESPONSES", "false").lower() == BOOLEAN_TRUE
-    )
-
     @property
     def request_timeout_seconds(self) -> float:
-        """Return the HTTP timeout in seconds for httpx."""
         return self.request_timeout_ms / 1000
 
 
