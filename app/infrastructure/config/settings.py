@@ -27,6 +27,10 @@ class Settings:
 
     request_timeout_ms: int = int(os.getenv("REQUEST_TIMEOUT", "3000"))
 
+    expose_raw_downstream_responses: bool = (
+        os.getenv("EXPOSE_RAW_DOWNSTREAM_RESPONSES", "false").lower() == "true"
+    )
+
     @property
     def request_timeout_seconds(self) -> float:
         return self.request_timeout_ms / 1000
