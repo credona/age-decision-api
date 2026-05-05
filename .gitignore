@@ -13,7 +13,6 @@ __pycache__/
 .git
 
 # Dev / tests
-tests/
 .pytest_cache/
 .cache/
 

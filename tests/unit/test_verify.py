@@ -3,7 +3,9 @@ import base64
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.application.use_cases.verification_orchestrator import verification_orchestrator
+from app.application.use_cases.verification_orchestrator import (
+    verification_orchestrator,
+)
 
 client = TestClient(app)
 
