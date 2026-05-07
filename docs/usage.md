@@ -88,8 +88,8 @@ Expected health response:
 {
   "status": "ok",
   "service": "age-decision-api",
-  "version": "2.5.0",
-  "contract_version": "2.5"
+  "version": "2.6.0",
+  "contract_version": "2.6"
 }
 ```
 <!-- END:HEALTH_RESPONSE -->
@@ -101,8 +101,8 @@ Expected version response:
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.5.0",
-  "contract_version": "2.5",
+  "version": "2.6.0",
+  "contract_version": "2.6",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api"
 }
@@ -116,8 +116,8 @@ Expected readiness response:
 {
   "status": "ready",
   "service": "age-decision-api",
-  "version": "2.5.0",
-  "contract_version": "2.5",
+  "version": "2.6.0",
+  "contract_version": "2.6",
   "core": {
     "status": "ready",
     "url": "http://age-decision-core:8000"
@@ -275,8 +275,8 @@ Run validation only:
 ```json
 {
   "service": "age-decision-api",
-  "version": "2.5.0",
-  "contract_version": "2.5",
+  "version": "2.6.0",
+  "contract_version": "2.6",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",
