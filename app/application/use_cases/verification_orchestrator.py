@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from app.application.ports.antispoof_client import AntispoofClientPort
 from app.application.ports.core_client import CoreClientPort
+from app.domain.calibration import ApiFusionCalibrationApplier, RuntimeCalibrationPolicy
 from app.domain.constants import (
     DECISION_ALLOW,
     DECISION_DENY,
@@ -28,9 +29,11 @@ class VerificationOrchestrator:
         self,
         core: CoreClientPort | None = None,
         antispoof: AntispoofClientPort | None = None,
+        calibration_policy: RuntimeCalibrationPolicy | None = None,
     ):
         self.core_client = core
         self.antispoof_client = antispoof
+        self.calibration_applier = ApiFusionCalibrationApplier(calibration_policy)
 
     async def readiness(self) -> dict[str, dict[str, str]]:
         if self.core_client is None or self.antispoof_client is None:
@@ -106,6 +109,14 @@ class VerificationOrchestrator:
             decision_check=decision_check,
             spoof_check=spoof_check,
         )
+        calibrated_fusion = self.calibration_applier.apply(
+            decision=decision,
+            cred_global_score=cred_global_score,
+            reason=reason,
+        )
+        decision = calibrated_fusion.decision
+        cred_global_score = calibrated_fusion.cred_global_score
+        reason = calibrated_fusion.reason
 
         result: VerifyResult = {
             "request_id": request_id,

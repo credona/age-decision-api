@@ -43,3 +43,13 @@ def test_project_runtime_does_not_include_downstream_model_or_threshold_config()
     assert "MODEL_PATH" not in runtime_text
     assert "AGE_MODEL_PATH" not in runtime_text
     assert "ANTISPOOF_MODEL_PATH" not in runtime_text
+
+
+def test_project_runtime_includes_api_runtime_calibration_controls():
+    project = json.loads(Path("project.json").read_text(encoding="utf-8"))
+
+    runtime_common = project["runtime"]["common"]
+
+    assert "API_CALIBRATION_POLICY_PATH" in runtime_common
+    assert "API_CALIBRATION_PUBLIC_KEY_B64" in runtime_common
+    assert runtime_common["API_CALIBRATION_REQUIRED"] == "false"

@@ -40,3 +40,11 @@ models/*.pt
 models/*.pth
 models/*.tflite
 models/*.bin
+
+# Runtime private calibration artifacts only
+/private-calibration/
+/calibration-artifacts/
+*.private.json
+*.policy.private.json
+*.calibration.json
+*.calibration.sig

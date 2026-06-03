@@ -27,6 +27,13 @@ FORBIDDEN_LOG_KEY_PARTS = (
     "downstream",
     "file",
     "path",
+    "calibration",
+    "policy",
+    "signature",
+    "sha256",
+    "hash",
+    "weight",
+    "margin",
 )
 
 FORBIDDEN_LOG_PATTERNS = (
@@ -42,6 +49,13 @@ FORBIDDEN_LOG_PATTERNS = (
     re.compile(r"cred_decision_score", re.IGNORECASE),
     re.compile(r"cred_antispoof_score", re.IGNORECASE),
     re.compile(r"cred_global_score", re.IGNORECASE),
+    re.compile(r"calibration", re.IGNORECASE),
+    re.compile(r"private_payload", re.IGNORECASE),
+    re.compile(r"policy", re.IGNORECASE),
+    re.compile(r"signature", re.IGNORECASE),
+    re.compile(r"sha256", re.IGNORECASE),
+    re.compile(r"weights?", re.IGNORECASE),
+    re.compile(r"margins?", re.IGNORECASE),
     re.compile(r"\.(jpg|jpeg|png|webp|bmp|mp4|mov|avi)", re.IGNORECASE),
 )
 
