@@ -98,3 +98,24 @@ def test_api_fusion_calibration_can_deny_allow_decision_without_exposing_policy(
     assert result.reason == "verification_failed"
     assert not hasattr(result, "private_payload")
     assert not hasattr(result, "calibration_parameters")
+
+
+def test_api_fusion_calibration_preserves_inconclusive_decision():
+    policy = make_policy(
+        {
+            "calibration_parameters": {
+                "cred_global_score_offset": 0.2,
+                "minimum_allow_score": 0.9,
+            }
+        }
+    )
+    applier = ApiFusionCalibrationApplier(policy)
+
+    result = applier.apply(
+        decision="inconclusive",
+        cred_global_score=0.0,
+        reason="threshold_uncertain",
+    )
+
+    assert result.decision == "inconclusive"
+    assert result.reason == "threshold_uncertain"

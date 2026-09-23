@@ -285,7 +285,8 @@ Run validation only:
   "public_contract": {
     "decision_values": [
       "allow",
-      "deny"
+      "deny",
+      "inconclusive"
     ],
     "score_field": "cred_global_score",
     "internal_estimate_exposed": false,

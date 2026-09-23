@@ -131,3 +131,76 @@ def test_verify_success(monkeypatch):
     assert "estimated_age" not in str(data)
     assert "is_adult" not in str(data)
     assert "confidence" not in str(data)
+
+
+def test_verify_accepts_public_inconclusive_response(monkeypatch):
+    async def fake_verify_image_base64(
+        image_base64,
+        request_id=None,
+        correlation_id=None,
+        majority_country=None,
+        age_threshold=None,
+    ):
+        return {
+            "request_id": request_id,
+            "correlation_id": correlation_id,
+            "decision": "inconclusive",
+            "cred_global_score": 0.0,
+            "decision_check": {
+                "status": "unknown",
+                "decision": "inconclusive",
+                "reason": "threshold_uncertain",
+                "threshold": {
+                    "type": "minimum_age",
+                    "value": 18,
+                    "source": "default",
+                    "majority_country": None,
+                },
+                "cred_decision_score": 0.0,
+            },
+            "spoof_check": {
+                "status": "passed",
+                "decision": "allow",
+                "reason": None,
+                "is_real": True,
+                "spoof_detected": False,
+                "cred_antispoof_score": 0.99,
+            },
+            "privacy": {
+                "image_stored": False,
+                "biometric_template_stored": False,
+                "raw_image_logged": False,
+                "downstream_raw_response_exposed": False,
+                "retention_policy": "not_stored_by_api_gateway",
+            },
+            "zk_proof": {
+                "zk_ready": True,
+                "proof_type": "interactive_zero_knowledge_ready",
+                "proof_status": "not_generated",
+                "statement": "threshold decision",
+            },
+            "reason": "threshold_uncertain",
+        }
+
+    monkeypatch.setattr(
+        verification_orchestrator,
+        "verify_image_base64",
+        fake_verify_image_base64,
+    )
+
+    image_base64 = base64.b64encode(b"fake-image").decode("utf-8")
+
+    response = client.post(
+        "/verify",
+        headers={
+            "X-Request-ID": "test-request-inconclusive",
+            "X-Correlation-ID": "test-correlation-inconclusive",
+        },
+        json={"image_base64": image_base64},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["decision"] == "inconclusive"
+    assert response.json()["decision_check"]["decision"] == "inconclusive"
+    assert response.json()["decision_check"]["status"] == "unknown"
+    assert response.json()["reason"] == "threshold_uncertain"

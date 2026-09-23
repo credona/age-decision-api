@@ -1,8 +1,10 @@
 DECISION_ALLOW = "allow"
 DECISION_DENY = "deny"
+DECISION_INCONCLUSIVE = "inconclusive"
 
 STATUS_PASSED = "passed"
 STATUS_FAILED = "failed"
+STATUS_UNKNOWN = "unknown"
 
 THRESHOLD_TYPE_MINIMUM_AGE = "minimum_age"
 THRESHOLD_SOURCE_DEFAULT = "default"
@@ -21,6 +23,7 @@ RETENTION_POLICY_API = "not_stored_by_api_gateway"
 
 BOOLEAN_TRUE = "true"
 CORE_DECISION_MATCH = "match"
+CORE_DECISION_UNCERTAIN = "uncertain"
 SPOOF_DECISION_REAL = "real"
 
 STATUS_READY = "ready"

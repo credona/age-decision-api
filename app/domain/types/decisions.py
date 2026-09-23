@@ -1,7 +1,7 @@
 from typing import Literal, Optional, TypedDict
 
 
-PublicDecision = Literal["allow", "deny"]
+PublicDecision = Literal["allow", "deny", "inconclusive"]
 
 
 class ThresholdPolicy(TypedDict):
@@ -21,7 +21,7 @@ class DecisionCheck(TypedDict):
 
 class SpoofCheck(TypedDict):
     status: Literal["passed", "failed", "unknown"]
-    decision: PublicDecision
+    decision: Literal["allow", "deny"]
     reason: Optional[str]
     is_real: Optional[bool]
     spoof_detected: Optional[bool]

@@ -66,7 +66,7 @@ class ThresholdPolicy(BaseModel):
 
 class NormalizedCheckResponse(BaseModel):
     status: Literal["passed", "failed", "unknown"]
-    decision: Literal["allow", "deny"]
+    decision: Literal["allow", "deny", "inconclusive"]
     reason: Optional[str] = None
 
 
@@ -76,6 +76,7 @@ class DecisionCheckResponse(NormalizedCheckResponse):
 
 
 class SpoofCheckResponse(NormalizedCheckResponse):
+    decision: Literal["allow", "deny"]
     is_real: Optional[bool] = None
     spoof_detected: Optional[bool] = None
     cred_antispoof_score: float
@@ -99,7 +100,7 @@ class ZkProofMetadataResponse(BaseModel):
 class VerifyResponse(BaseModel):
     request_id: str
     correlation_id: str
-    decision: Literal["allow", "deny"]
+    decision: Literal["allow", "deny", "inconclusive"]
     cred_global_score: float
     decision_check: DecisionCheckResponse
     spoof_check: SpoofCheckResponse

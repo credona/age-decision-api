@@ -8,6 +8,7 @@ from app.domain.calibration import ApiFusionCalibrationApplier, RuntimeCalibrati
 from app.domain.constants import (
     DECISION_ALLOW,
     DECISION_DENY,
+    DECISION_INCONCLUSIVE,
     INPUT_TYPE_IMAGE_BASE64,
     REASON_VERIFICATION_FAILED,
     THRESHOLD_SOURCE_MAJORITY_COUNTRY,
@@ -172,10 +173,19 @@ class VerificationOrchestrator:
         decision_check: DecisionCheck,
         spoof_check: SpoofCheck,
     ) -> PublicDecision:
-        if (
-            decision_check["decision"] == DECISION_ALLOW
-            and spoof_check["decision"] == DECISION_ALLOW
-        ):
+        core_decision = decision_check["decision"]
+        spoof_decision = spoof_check["decision"]
+
+        if spoof_decision == DECISION_DENY:
+            return DECISION_DENY
+
+        if core_decision == DECISION_DENY:
+            return DECISION_DENY
+
+        if core_decision == DECISION_INCONCLUSIVE and spoof_decision == DECISION_ALLOW:
+            return DECISION_INCONCLUSIVE
+
+        if core_decision == DECISION_ALLOW and spoof_decision == DECISION_ALLOW:
             return DECISION_ALLOW
 
         return DECISION_DENY
@@ -199,11 +209,20 @@ class VerificationOrchestrator:
         if decision == DECISION_ALLOW:
             return None
 
+        if (
+            decision_check["decision"] == DECISION_INCONCLUSIVE
+            and spoof_check["decision"] == DECISION_DENY
+        ):
+            return spoof_check["reason"] or "spoof_check_failed"
+
         if decision_check["decision"] == DECISION_DENY:
             return decision_check["reason"] or "decision_check_failed"
 
         if spoof_check["decision"] == DECISION_DENY:
             return spoof_check["reason"] or "spoof_check_failed"
+
+        if decision == DECISION_INCONCLUSIVE:
+            return decision_check["reason"] or REASON_VERIFICATION_FAILED
 
         return REASON_VERIFICATION_FAILED
 

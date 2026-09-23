@@ -20,7 +20,7 @@ def main() -> None:
             "age-decision-js": f">={major_version}.0.0 <{int(major_version) + 1}.0.0",
         },
         "public_contract": {
-            "decision_values": ["allow", "deny"],
+            "decision_values": ["allow", "deny", "inconclusive"],
             "score_field": "cred_global_score",
             "internal_estimate_exposed": False,
             "raw_decision_signal_quality_exposed": False,

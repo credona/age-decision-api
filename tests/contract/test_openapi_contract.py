@@ -59,3 +59,28 @@ def test_openapi_error_detail_schema_exposes_only_standardized_fields():
     properties = schema["properties"]
 
     assert set(properties.keys()) == {"code", "message"}
+
+
+def test_openapi_public_decision_contract_is_three_state():
+    response = client.get("/openapi.json")
+
+    assert response.status_code == 200
+
+    payload = response.json()
+
+    verify_decision = payload["components"]["schemas"]["VerifyResponse"]["properties"][
+        "decision"
+    ]
+    decision_check_decision = payload["components"]["schemas"]["DecisionCheckResponse"][
+        "properties"
+    ]["decision"]
+    spoof_check_decision = payload["components"]["schemas"]["SpoofCheckResponse"][
+        "properties"
+    ]["decision"]
+
+    ternary_decisions = {"allow", "deny", "inconclusive"}
+    binary_decisions = {"allow", "deny"}
+
+    assert set(verify_decision["enum"]) == ternary_decisions
+    assert set(decision_check_decision["enum"]) == ternary_decisions
+    assert set(spoof_check_decision["enum"]) == binary_decisions

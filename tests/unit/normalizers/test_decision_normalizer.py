@@ -49,7 +49,7 @@ def test_age_normalizer_fail_for_no_match():
     assert result["cred_decision_score"] == 0.42
 
 
-def test_age_normalizer_fail_for_uncertain():
+def test_age_normalizer_preserves_uncertain_as_inconclusive():
     raw = {
         "decision": "uncertain",
         "rejection_reason": "threshold_uncertain",
@@ -67,7 +67,7 @@ def test_age_normalizer_fail_for_uncertain():
 
     result = normalize_decision_check(raw)
 
-    assert result["status"] == "failed"
-    assert result["decision"] == "deny"
+    assert result["status"] == "unknown"
+    assert result["decision"] == "inconclusive"
     assert result["reason"] == "threshold_uncertain"
     assert result["cred_decision_score"] == 0.0

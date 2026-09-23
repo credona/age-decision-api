@@ -110,12 +110,21 @@ GET /ready
 
 <h2>Decision values</h2>
 
-```text
-allow
-deny
-```
+The public verification decision has three possible values:
 
-The public decision is `allow` only when both normalized checks allow the request.
+- ALLOW
+- DENY
+- INCONCLUSIVE
+
+The age decision check may return ALLOW, DENY, or INCONCLUSIVE.
+
+The AntiSpoof check remains binary: ALLOW or DENY.
+
+The final verification decision follows these rules:
+
+- ALLOW when the age check allows and the AntiSpoof check allows.
+- INCONCLUSIVE when the age check is inconclusive and the AntiSpoof check allows.
+- DENY when either check denies, including a detected spoof.
 
 <hr>
 
@@ -284,7 +293,8 @@ Generated view:
   "public_contract": {
     "decision_values": [
       "allow",
-      "deny"
+      "deny",
+      "inconclusive"
     ],
     "score_field": "cred_global_score",
     "internal_estimate_exposed": false,
