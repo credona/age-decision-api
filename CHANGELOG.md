@@ -21,6 +21,10 @@ Global project direction is tracked in the central Age Decision repository.
   <li>Hardened response filtering and privacy tests to prevent calibration internals from reaching public API responses.</li>
   <li>Hardened safe logging to prevent private calibration fields, signatures, hashes, weights, margins, thresholds, and downstream scoring internals from being logged.</li>
   <li>Added runtime controls for API_CALIBRATION_POLICY_PATH, API_CALIBRATION_PUBLIC_KEY_B64, and API_CALIBRATION_REQUIRED.</li>
+  <li>Added persistent API calibration lifecycle storage, active state, previous state, rollback records, provenance events, activation attestations, and rollback attestations.</li>
+  <li>Added calibration distribution manifest and trusted registry validation before runtime API fusion calibration activation.</li>
+  <li>Added public API calibration summary endpoint with strict response filtering and without private payload exposure.</li>
+  <li>Added runtime rollback wiring for API fusion calibration.</li>
   <li>Ensured private runtime calibration policies are excluded from Git tracking.</li>
   <li>Preserved Docker CI-equivalent validation after runtime calibration integration.</li>
 </ul>

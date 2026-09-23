@@ -41,6 +41,13 @@ CHANGELOG_SECTION_ITEMS: tuple[str, ...] = (
     "weights, margins, thresholds, and downstream scoring internals from being logged.",
     "Added runtime controls for API_CALIBRATION_POLICY_PATH, "
     "API_CALIBRATION_PUBLIC_KEY_B64, and API_CALIBRATION_REQUIRED.",
+    "Added persistent API calibration lifecycle storage, active state, previous state, "
+    "rollback records, provenance events, activation attestations, and rollback attestations.",
+    "Added calibration distribution manifest and trusted registry validation before "
+    "runtime API fusion calibration activation.",
+    "Added public API calibration summary endpoint with strict response filtering and "
+    "without private payload exposure.",
+    "Added runtime rollback wiring for API fusion calibration.",
     "Ensured private runtime calibration policies are excluded from Git tracking.",
     "Preserved Docker CI-equivalent validation after runtime calibration integration.",
 )

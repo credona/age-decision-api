@@ -53,3 +53,15 @@ def test_project_runtime_includes_api_runtime_calibration_controls():
     assert "API_CALIBRATION_POLICY_PATH" in runtime_common
     assert "API_CALIBRATION_PUBLIC_KEY_B64" in runtime_common
     assert runtime_common["API_CALIBRATION_REQUIRED"] == "false"
+
+
+def test_project_runtime_includes_api_calibration_lifecycle_controls():
+    project = json.loads(Path("project.json").read_text(encoding="utf-8"))
+
+    runtime_common = project["runtime"]["common"]
+
+    assert runtime_common["API_CALIBRATION_LIFECYCLE_DIR"]
+    assert "API_CALIBRATION_MANIFEST_PATH" in runtime_common
+    assert "API_CALIBRATION_TRUSTED_REGISTRY_PATH" in runtime_common
+    assert runtime_common["API_CALIBRATION_PROVENANCE_PATH"]
+    assert runtime_common["API_CALIBRATION_ATTESTATION_DIR"]

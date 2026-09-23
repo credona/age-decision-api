@@ -1,4 +1,4 @@
-from app.models.schemas import VerifyResponse
+from app.models.schemas import CalibrationSummaryResponse, VerifyResponse
 
 
 def filter_verify_response(payload: dict) -> VerifyResponse:
@@ -9,3 +9,15 @@ def filter_verify_response(payload: dict) -> VerifyResponse:
     explicitly declared by the public VerifyResponse schema.
     """
     return VerifyResponse(**payload)
+
+
+def filter_calibration_summary_response(
+    payload: dict | None,
+) -> CalibrationSummaryResponse:
+    if payload is None:
+        return CalibrationSummaryResponse(active=False, summary=None)
+
+    return CalibrationSummaryResponse(
+        active=True,
+        summary=payload,
+    )

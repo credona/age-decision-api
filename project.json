@@ -30,7 +30,12 @@
       "LOG_FORMAT": "json",
       "API_CALIBRATION_POLICY_PATH": "",
       "API_CALIBRATION_PUBLIC_KEY_B64": "",
-      "API_CALIBRATION_REQUIRED": "false"
+      "API_CALIBRATION_REQUIRED": "false",
+      "API_CALIBRATION_LIFECYCLE_DIR": "/var/lib/age-decision-api/calibration",
+      "API_CALIBRATION_MANIFEST_PATH": "",
+      "API_CALIBRATION_TRUSTED_REGISTRY_PATH": "",
+      "API_CALIBRATION_PROVENANCE_PATH": "/var/lib/age-decision-api/calibration/provenance.jsonl",
+      "API_CALIBRATION_ATTESTATION_DIR": "/var/lib/age-decision-api/calibration/attestations"
     },
     "dev": {},
     "prod": {}
