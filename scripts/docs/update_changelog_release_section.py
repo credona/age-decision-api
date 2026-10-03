@@ -1,4 +1,4 @@
-"""Deterministically maintain the v2.5.0 release section in CHANGELOG.md."""
+"""Deterministically maintain the v2.6.0 release section in CHANGELOG.md."""
 
 from __future__ import annotations
 
@@ -16,24 +16,40 @@ from lib.changelog import (  # noqa: E402
 )
 
 CHANGELOG_PATH = Path("CHANGELOG.md")
-MANAGED_VERSION = "2.5.0"
+MANAGED_VERSION = "2.6.0"
 
 CHANGELOG_SECTION_ITEMS: tuple[str, ...] = (
-    "Introduced strict client ports for Core and Antispoof services with full async contract.",
-    "Decoupled VerificationOrchestrator from infrastructure using port-based injection.",
-    "Enforced response_filter as final public contract boundary stripping internal payloads.",
-    "Added architecture tests preventing direct infrastructure usage in application layer.",
-    "Introduced a versioned global scoring policy for cred_global_score.",
-    "Defined cred_global_score as a conservative minimum of public downstream scores.",
-    "Removed raw downstream response exposure from the public verification flow.",
-    "Simplified runtime configuration with shared common values and empty "
-    "dev/prod overrides.",
-    "Removed non-deterministic runtime flags and downstream model threshold settings.",
-    "Added score bounds, monotonicity, stability, and privacy regression tests.",
-    "Documented the public API scoring methodology.",
-    "Preserved response_filter as the final public contract barrier.",
-    "Preserved privacy-first orchestration without exposing downstream internals.",
-    "Validated the release through Docker CI-equivalent checks.",
+    "Updated project and compatibility metadata to v2.6.0.",
+    "Aligned API with the centralized age-decision-benchmark laboratory.",
+    "Removed legacy local benchmark orchestration from the API repository.",
+    "Added contract, privacy, response filter, normalizer, scoring, and runtime "
+    "configuration regression tests.",
+    "Kept API focused on orchestration, public response filtering, and downstream "
+    "privacy boundaries.",
+    "Added runtime private calibration policy loading for API fusion.",
+    "Added SHA-256 integrity verification for private API calibration policies.",
+    "Added Ed25519 signature verification for private API calibration policies.",
+    "Added service, contract_version, and model_identifier compatibility checks "
+    "before API fusion calibration activation.",
+    "Added fail-fast runtime activation when API calibration is required but missing "
+    "or invalid.",
+    "Applied deterministic API fusion calibration after Core and AntiSpoof normalization "
+    "and before public response filtering.",
+    "Hardened response filtering and privacy tests to prevent calibration internals "
+    "from reaching public API responses.",
+    "Hardened safe logging to prevent private calibration fields, signatures, hashes, "
+    "weights, margins, thresholds, and downstream scoring internals from being logged.",
+    "Added runtime controls for API_CALIBRATION_POLICY_PATH, "
+    "API_CALIBRATION_PUBLIC_KEY_B64, and API_CALIBRATION_REQUIRED.",
+    "Added persistent API calibration lifecycle storage, active state, previous state, "
+    "rollback records, provenance events, activation attestations, and rollback attestations.",
+    "Added calibration distribution manifest and trusted registry validation before "
+    "runtime API fusion calibration activation.",
+    "Added public API calibration summary endpoint with strict response filtering and "
+    "without private payload exposure.",
+    "Added runtime rollback wiring for API fusion calibration.",
+    "Ensured private runtime calibration policies are excluded from Git tracking.",
+    "Preserved Docker CI-equivalent validation after runtime calibration integration.",
 )
 
 

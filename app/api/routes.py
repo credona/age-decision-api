@@ -6,7 +6,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.api.input_validator import UnsupportedInputTypeError, validate_input_type
-from app.api.response_filter import filter_verify_response
+from app.api.response_filter import (
+    filter_calibration_summary_response,
+    filter_verify_response,
+)
 from app.application.dto.verify_command import VerifyCommand
 from app.application.use_cases.run_verification import RunVerificationUseCase
 from app.application.use_cases.verification_orchestrator import (
@@ -21,11 +24,16 @@ from app.domain.constants import (
     LOG_ERROR_TYPE_VALIDATION,
     STATUS_READY,
 )
+from app.infrastructure.calibration import (
+    get_api_runtime_calibration_summary,
+    load_api_runtime_calibration,
+)
 from app.infrastructure.clients.antispoof_client import antispoof_client
 from app.infrastructure.clients.core_client import core_client
 from app.models.schemas import (
     ErrorResponse,
     HealthResponse,
+    CalibrationSummaryResponse,
     ReadyResponse,
     VerifyRequest,
     VerifyResponse,
@@ -34,8 +42,12 @@ from app.project import project_metadata
 
 router = APIRouter()
 
+runtime_calibration_policy = load_api_runtime_calibration()
 verification_orchestrator.core_client = core_client
 verification_orchestrator.antispoof_client = antispoof_client
+verification_orchestrator.calibration_applier = (
+    verification_orchestrator.calibration_applier.__class__(runtime_calibration_policy)
+)
 run_verification_use_case = RunVerificationUseCase(verification_orchestrator)
 
 
@@ -72,6 +84,11 @@ async def ready() -> ReadyResponse:
         core=statuses["core"],
         antispoof=statuses["antispoof"],
     )
+
+
+@router.get("/calibration/summary", response_model=CalibrationSummaryResponse)
+def calibration_summary() -> CalibrationSummaryResponse:
+    return filter_calibration_summary_response(get_api_runtime_calibration_summary())
 
 
 @router.post(

@@ -3,6 +3,8 @@ services:
     build:
       context: ../age-decision-core
       dockerfile: Dockerfile.dev
+    volumes:
+      - ../age-decision-core/models:/app/models:ro
     networks:
       - age-decision-network
 
@@ -10,6 +12,8 @@ services:
     build:
       context: ../age-decision-antispoof
       dockerfile: Dockerfile.dev
+    volumes:
+      - ../age-decision-antispoof/antispoof/models:/app/antispoof/models:ro
     networks:
       - age-decision-network
 

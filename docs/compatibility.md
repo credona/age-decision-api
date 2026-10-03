@@ -110,12 +110,21 @@ GET /ready
 
 <h2>Decision values</h2>
 
-```text
-allow
-deny
-```
+The public verification decision has three possible values:
 
-The public decision is `allow` only when both normalized checks allow the request.
+- ALLOW
+- DENY
+- INCONCLUSIVE
+
+The age decision check may return ALLOW, DENY, or INCONCLUSIVE.
+
+The AntiSpoof check remains binary: ALLOW or DENY.
+
+The final verification decision follows these rules:
+
+- ALLOW when the age check allows and the AntiSpoof check allows.
+- INCONCLUSIVE when the age check is inconclusive and the AntiSpoof check allows.
+- DENY when either check denies, including a detected spoof.
 
 <hr>
 
@@ -250,8 +259,8 @@ Generated view:
 {
   "service_name": "age-decision-api",
   "app_name": "Age Decision API",
-  "version": "2.5.0",
-  "contract_version": "2.5",
+  "version": "2.6.0",
+  "contract_version": "2.6",
   "repository": "https://github.com/credona/age-decision-api",
   "image": "ghcr.io/credona/age-decision-api"
 }
@@ -274,8 +283,8 @@ Generated view:
 ```json
 {
   "service": "age-decision-api",
-  "version": "2.5.0",
-  "contract_version": "2.5",
+  "version": "2.6.0",
+  "contract_version": "2.6",
   "compatible_with": {
     "age-decision-core": ">=2.0.0 <3.0.0",
     "age-decision-antispoof": ">=2.0.0 <3.0.0",
@@ -284,7 +293,8 @@ Generated view:
   "public_contract": {
     "decision_values": [
       "allow",
-      "deny"
+      "deny",
+      "inconclusive"
     ],
     "score_field": "cred_global_score",
     "internal_estimate_exposed": false,

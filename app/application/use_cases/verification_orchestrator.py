@@ -4,9 +4,11 @@ from uuid import uuid4
 
 from app.application.ports.antispoof_client import AntispoofClientPort
 from app.application.ports.core_client import CoreClientPort
+from app.domain.calibration import ApiFusionCalibrationApplier, RuntimeCalibrationPolicy
 from app.domain.constants import (
     DECISION_ALLOW,
     DECISION_DENY,
+    DECISION_INCONCLUSIVE,
     INPUT_TYPE_IMAGE_BASE64,
     REASON_VERIFICATION_FAILED,
     THRESHOLD_SOURCE_MAJORITY_COUNTRY,
@@ -28,9 +30,11 @@ class VerificationOrchestrator:
         self,
         core: CoreClientPort | None = None,
         antispoof: AntispoofClientPort | None = None,
+        calibration_policy: RuntimeCalibrationPolicy | None = None,
     ):
         self.core_client = core
         self.antispoof_client = antispoof
+        self.calibration_applier = ApiFusionCalibrationApplier(calibration_policy)
 
     async def readiness(self) -> dict[str, dict[str, str]]:
         if self.core_client is None or self.antispoof_client is None:
@@ -106,6 +110,14 @@ class VerificationOrchestrator:
             decision_check=decision_check,
             spoof_check=spoof_check,
         )
+        calibrated_fusion = self.calibration_applier.apply(
+            decision=decision,
+            cred_global_score=cred_global_score,
+            reason=reason,
+        )
+        decision = calibrated_fusion.decision
+        cred_global_score = calibrated_fusion.cred_global_score
+        reason = calibrated_fusion.reason
 
         result: VerifyResult = {
             "request_id": request_id,
@@ -161,10 +173,19 @@ class VerificationOrchestrator:
         decision_check: DecisionCheck,
         spoof_check: SpoofCheck,
     ) -> PublicDecision:
-        if (
-            decision_check["decision"] == DECISION_ALLOW
-            and spoof_check["decision"] == DECISION_ALLOW
-        ):
+        core_decision = decision_check["decision"]
+        spoof_decision = spoof_check["decision"]
+
+        if spoof_decision == DECISION_DENY:
+            return DECISION_DENY
+
+        if core_decision == DECISION_DENY:
+            return DECISION_DENY
+
+        if core_decision == DECISION_INCONCLUSIVE and spoof_decision == DECISION_ALLOW:
+            return DECISION_INCONCLUSIVE
+
+        if core_decision == DECISION_ALLOW and spoof_decision == DECISION_ALLOW:
             return DECISION_ALLOW
 
         return DECISION_DENY
@@ -188,11 +209,20 @@ class VerificationOrchestrator:
         if decision == DECISION_ALLOW:
             return None
 
+        if (
+            decision_check["decision"] == DECISION_INCONCLUSIVE
+            and spoof_check["decision"] == DECISION_DENY
+        ):
+            return spoof_check["reason"] or "spoof_check_failed"
+
         if decision_check["decision"] == DECISION_DENY:
             return decision_check["reason"] or "decision_check_failed"
 
         if spoof_check["decision"] == DECISION_DENY:
             return spoof_check["reason"] or "spoof_check_failed"
+
+        if decision == DECISION_INCONCLUSIVE:
+            return decision_check["reason"] or REASON_VERIFICATION_FAILED
 
         return REASON_VERIFICATION_FAILED
 

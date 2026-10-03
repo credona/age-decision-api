@@ -1,9 +1,12 @@
 from app.domain.constants import (
     CORE_DECISION_MATCH,
+    CORE_DECISION_UNCERTAIN,
     DECISION_ALLOW,
     DECISION_DENY,
+    DECISION_INCONCLUSIVE,
     STATUS_FAILED,
     STATUS_PASSED,
+    STATUS_UNKNOWN,
     THRESHOLD_SOURCE_DEFAULT,
     THRESHOLD_TYPE_MINIMUM_AGE,
 )
@@ -57,25 +60,35 @@ def _threshold_from_raw(age_decision: dict[str, Any]) -> dict[str, Any]:
 
 def normalize_decision_check(age_decision: dict[str, Any]) -> DecisionCheck:
     """
-    Normalize age-decision-core v2 response into the API contract.
+    Normalize age-decision-core v2 response into the public API contract.
 
     Core decisions:
     - match -> allow
-    - no_match -> deny
-    - uncertain -> deny
+    - uncertain -> inconclusive
+    - no_match or unknown values -> deny (fail closed)
     """
     core_decision = age_decision.get("decision")
+    reason = (
+        age_decision.get("rejection_reason")
+        or age_decision.get("reason")
+        or "decision_check_failed"
+    )
 
-    passed = core_decision == CORE_DECISION_MATCH
+    if core_decision == CORE_DECISION_MATCH:
+        status = STATUS_PASSED
+        decision = DECISION_ALLOW
+        reason = None
+    elif core_decision == CORE_DECISION_UNCERTAIN:
+        status = STATUS_UNKNOWN
+        decision = DECISION_INCONCLUSIVE
+    else:
+        status = STATUS_FAILED
+        decision = DECISION_DENY
 
     return {
-        "status": STATUS_PASSED if passed else STATUS_FAILED,
-        "decision": DECISION_ALLOW if passed else DECISION_DENY,
-        "reason": None
-        if passed
-        else age_decision.get("rejection_reason")
-        or age_decision.get("reason")
-        or "decision_check_failed",
+        "status": status,
+        "decision": decision,
+        "reason": reason,
         "threshold": _threshold_from_raw(age_decision),
         "cred_decision_score": _score_from_raw(age_decision),
     }

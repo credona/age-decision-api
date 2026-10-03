@@ -4,6 +4,33 @@ This changelog tracks changes specific to Age Decision API.
 
 Global project direction is tracked in the central Age Decision repository.
 
+<h2>2.6.0</h2>
+
+<ul>
+  <li>Updated project and compatibility metadata to v2.6.0.</li>
+  <li>Aligned API with the centralized age-decision-benchmark laboratory.</li>
+  <li>Removed legacy local benchmark orchestration from the API repository.</li>
+  <li>Added contract, privacy, response filter, normalizer, scoring, and runtime configuration regression tests.</li>
+  <li>Kept API focused on orchestration, public response filtering, and downstream privacy boundaries.</li>
+  <li>Added runtime private calibration policy loading for API fusion.</li>
+  <li>Added SHA-256 integrity verification for private API calibration policies.</li>
+  <li>Added Ed25519 signature verification for private API calibration policies.</li>
+  <li>Added service, contract_version, and model_identifier compatibility checks before API fusion calibration activation.</li>
+  <li>Added fail-fast runtime activation when API calibration is required but missing or invalid.</li>
+  <li>Applied deterministic API fusion calibration after Core and AntiSpoof normalization and before public response filtering.</li>
+  <li>Hardened response filtering and privacy tests to prevent calibration internals from reaching public API responses.</li>
+  <li>Hardened safe logging to prevent private calibration fields, signatures, hashes, weights, margins, thresholds, and downstream scoring internals from being logged.</li>
+  <li>Added runtime controls for API_CALIBRATION_POLICY_PATH, API_CALIBRATION_PUBLIC_KEY_B64, and API_CALIBRATION_REQUIRED.</li>
+  <li>Added persistent API calibration lifecycle storage, active state, previous state, rollback records, provenance events, activation attestations, and rollback attestations.</li>
+  <li>Added calibration distribution manifest and trusted registry validation before runtime API fusion calibration activation.</li>
+  <li>Added public API calibration summary endpoint with strict response filtering and without private payload exposure.</li>
+  <li>Added runtime rollback wiring for API fusion calibration.</li>
+  <li>Ensured private runtime calibration policies are excluded from Git tracking.</li>
+  <li>Preserved Docker CI-equivalent validation after runtime calibration integration.</li>
+</ul>
+
+<hr>
+
 <h2>2.5.0</h2>
 
 <ul>

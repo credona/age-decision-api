@@ -24,6 +24,21 @@ class ReadyResponse(BaseModel):
     antispoof: ServiceReadyStatus
 
 
+class PublicCalibrationSummary(BaseModel):
+    service: str
+    contract_version: str
+    model_identifier: str
+    policy_id: str
+    policy_version: str
+    benchmark_attestation_id: str
+    activated_at: str
+
+
+class CalibrationSummaryResponse(BaseModel):
+    active: bool
+    summary: Optional[PublicCalibrationSummary] = None
+
+
 class VerifyRequest(BaseModel):
     input_type: Literal["image", "image_sequence", "video"] = Field(default="image")
     image_base64: str = Field(..., min_length=1)
@@ -51,7 +66,7 @@ class ThresholdPolicy(BaseModel):
 
 class NormalizedCheckResponse(BaseModel):
     status: Literal["passed", "failed", "unknown"]
-    decision: Literal["allow", "deny"]
+    decision: Literal["allow", "deny", "inconclusive"]
     reason: Optional[str] = None
 
 
@@ -61,6 +76,7 @@ class DecisionCheckResponse(NormalizedCheckResponse):
 
 
 class SpoofCheckResponse(NormalizedCheckResponse):
+    decision: Literal["allow", "deny"]
     is_real: Optional[bool] = None
     spoof_detected: Optional[bool] = None
     cred_antispoof_score: float
@@ -84,7 +100,7 @@ class ZkProofMetadataResponse(BaseModel):
 class VerifyResponse(BaseModel):
     request_id: str
     correlation_id: str
-    decision: Literal["allow", "deny"]
+    decision: Literal["allow", "deny", "inconclusive"]
     cred_global_score: float
     decision_check: DecisionCheckResponse
     spoof_check: SpoofCheckResponse
